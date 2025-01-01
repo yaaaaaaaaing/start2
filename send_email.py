@@ -20,7 +20,7 @@ def send_email(subject, body, to_email, attachments=[]):
         # 如果有附件，添加附件
         for attachment in attachments:
             with open(attachment, 'rb') as file:
-                part = MIMEBase('application', 'octet-stream')
+                part = MIMEBase('application', 'pdf')
                 part.set_payload(file.read())
                 encoders.encode_base64(part)
                 part.add_header(
