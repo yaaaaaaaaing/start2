@@ -1,0 +1,241 @@
+import requests
+import json
+import hashlib
+import openpyxl
+import crcmod
+from send_email import send_email
+
+def hash_uniform_check(hash_path,name_list_path):
+    with open(hash_path) as hash_file:
+        hash_dict = json.load(hash_file)
+    hash_name_list_hist = hash_dict["name_list"]
+
+    with open(name_list_path,'rb') as name_list_file:
+        name_list_str = name_list_file.read()
+        hash_name_list = hashlib.md5(name_list_str).hexdigest()
+    if hash_name_list != hash_name_list_hist:
+        return False
+    else:
+        return True
+
+def hash_update(hash_path,name_list_path):
+    with open(name_list_path,'rb') as name_list_file:
+        name_list_str = name_list_file.read()
+        hash_name_list = hashlib.md5(name_list_str).hexdigest()
+    
+    update_hash_dict = {}
+    update_hash_dict["name_list"] = hash_name_list
+    with open(hash_path,'w') as hash_file:
+        hash_file.write(json.dumps(update_hash_dict, indent=2, ensure_ascii=False))
+        hash_file.close()
+
+def name_list_check(name_list_path):
+
+    # 检查每个server email是否包含五个子服务
+    # 检查是否有重复的client send_email
+    # 返回最大行数
+    name_list_wb = openpyxl.load_workbook(name_list_path)
+    name_list_ws = name_list_wb["list"]
+    client_vpn_list = []
+    client_nf_list = []
+    serv_email_conter = 4
+    for row in range(2,name_list_ws.max_row+1):
+        serv_email = name_list_ws.cell(row=row,column=column_serv_email).value
+        client_vpn_email = name_list_ws.cell(row=row,column=column_client_vpn_email).value
+        client_nf_email = name_list_ws.cell(row=row,column=column_client_nf_email).value
+        if serv_email:
+            if serv_email_conter != 4:
+                print(f"serv_email {serv_email} is not in the right row")
+                exit(1)
+            elif serv_email == "#endofdata":
+                serv_email_conter = 0
+                max_row_list = row
+                break
+            else:
+                serv_email_conter = 0
+        else:
+            serv_email_conter += 1
+        
+        
+
+        if client_vpn_email:
+            if client_vpn_email in client_vpn_list:
+                print(f"client_vpn_email {client_vpn_email} is duplicated")
+                exit(1)
+            else:
+                client_vpn_list.append(client_vpn_email)
+        if client_nf_email:
+            if client_nf_email in client_nf_list:
+                print(f"client_nf_email {client_nf_email} is duplicated")
+                exit(1)
+            else:
+                client_nf_list.append(client_nf_email)
+
+
+    return max_row_list
+
+def name_list_dict_gen(name_list_path,max_row_list):
+    name_list_wb = openpyxl.load_workbook(name_list_path)
+    name_list_ws = name_list_wb["list"]
+    for row in range(2,max_row_list):
+        serv_email = name_list_ws.cell(row=row,column=column_serv_email).value
+        client_vpn_email = name_list_ws.cell(row=row,column=column_client_vpn_email).value
+        client_nf_email = name_list_ws.cell(row=row,column=column_client_nf_email).value
+
+        crc16_func_email = crcmod.mkCrcFun(0x11021, initCrc=0, xorOut=0xFFFF, rev=True)
+        crc16_func_nf = crcmod.mkCrcFun(0x18005, initCrc=0, xorOut=0xFFFF, rev=True)
+        crc16_func_vpn = crcmod.mkCrcFun(0x13d65, initCrc=0, xorOut=0xFFFF, rev=True)
+        crc16_func_pin = crcmod.mkCrcFun(0x18005, initCrc=0, xorOut=0xFFFF, rev=True)
+        if serv_email is not None:
+            serv_email_data = serv_email.encode('utf-8')
+            # name_list_ws.cell(row=row,column=column_serv_email_pw).value = "PassWord~" + hex(crc16_func_email(serv_email_data)).replace("0x","")
+            name_list_ws.cell(row=row,column=column_serv_nf_pw).value = "PassWord~" + hex(crc16_func_nf(serv_email_data)).replace("0x","")
+            # name_list_ws.cell(row=row,column=column_serv_vpn_pw).value = "PassWord~" + hex(crc16_func_vpn(serv_email_data)).replace("0x","")
+            counter = 0
+        if client_nf_email is not None:
+            client_nf_email_data = serv_email_data+hex(counter).encode('utf-8')
+            name_list_ws.cell(row=row,column=column_client_nf_pin).value = str(crc16_func_pin(client_nf_email_data)).zfill(4)[:4] + f" 位置{counter+1}"
+            counter += 1
+        
+    name_list_wb.save(name_list_path)
+
+def name_list_parse(name_list_path,max_row_list):
+    name_list_wb = openpyxl.load_workbook(name_list_path)
+    name_list_ws = name_list_wb["list"]
+    email_info_list = []
+    for row in range(2,max_row_list):
+        serv_email = name_list_ws.cell(row=row,column=column_serv_email).value
+        if serv_email is not None:
+            email_info_dict = {}
+            email_info_dict["serv_email"] = serv_email
+            email_info_dict["serv_email_pw"] = name_list_ws.cell(row=row,column=column_serv_email_pw).value
+            email_info_dict["serv_nf_pw"] = name_list_ws.cell(row=row,column=column_serv_nf_pw).value
+            email_info_dict["serv_vpn_url"] = name_list_ws.cell(row=row,column=column_serv_vpn_pw).value
+            email_info_dict["client_vpn_email"] = []
+            email_info_dict["client_pin_email"] = []
+            email_info_dict["client_nf_email"] = []
+            client_vpn_email = name_list_ws.cell(row=row,column=column_client_vpn_email).value
+            client_nf_pin = name_list_ws.cell(row=row,column=column_client_nf_pin).value
+            client_nf_email = name_list_ws.cell(row=row,column=column_client_nf_email).value
+            if client_vpn_email is not None:
+                email_info_dict["client_vpn_email"].append(client_vpn_email)
+            if client_nf_email is not None:
+                email_info_dict["client_nf_email"].append(client_nf_email)
+                email_info_dict["client_pin_email"].append(client_nf_pin)
+            email_info_list.append(email_info_dict)
+        else:
+            email_info_dict = email_info_list[-1]
+            client_vpn_email = name_list_ws.cell(row=row,column=column_client_vpn_email).value
+            client_nf_pin = name_list_ws.cell(row=row,column=column_client_nf_pin).value
+            client_nf_email = name_list_ws.cell(row=row,column=column_client_nf_email).value
+            if client_vpn_email is not None:
+                email_info_dict["client_vpn_email"].append(client_vpn_email)
+            if client_nf_email is not None:
+                email_info_dict["client_nf_email"].append(client_nf_email)
+                email_info_dict["client_pin_email"].append(client_nf_pin)
+
+    client_info_dict = {}
+    for email_info_dict in email_info_list:
+        for client_vpn_email in email_info_dict["client_vpn_email"]:
+            if client_vpn_email not in client_info_dict:
+                client_info_dict[client_vpn_email] = {}
+                client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
+                client_info_dict[client_vpn_email]["serv_vpn_url"] = email_info_dict["serv_vpn_url"]
+            else:
+                client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
+                client_info_dict[client_vpn_email]["serv_vpn_url"] = email_info_dict["serv_vpn_url"]
+        for client_nf_email in email_info_dict["client_nf_email"]:
+            if client_nf_email not in client_info_dict:
+                client_info_dict[client_nf_email] = {}
+                client_info_dict[client_nf_email]["serv_nf_email"] = email_info_dict["serv_email"]
+                client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
+                client_info_dict[client_nf_email]["serv_nf_pin"] = email_info_dict["client_pin_email"][email_info_dict["client_nf_email"].index(client_nf_email)]
+            else:
+                client_info_dict[client_nf_email]["serv_nf_email"] = email_info_dict["serv_email"]
+                client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
+                client_info_dict[client_nf_email]["serv_nf_pin"] = email_info_dict["client_pin_email"][email_info_dict["client_nf_email"].index(client_nf_email)]
+
+    return client_info_dict
+
+def client_info_compare(client_info_dict,client_conf_path):
+    with open(client_conf_path,'r') as client_conf_file:
+        client_info_dict_old = json.load(client_conf_file)
+    
+    client_info_delta_dict = {}
+    for key,item in client_info_dict.items():
+        if key in client_info_dict_old:
+            if item != client_info_dict_old[key]:
+                client_info_delta_dict[key] = item
+        else:
+            client_info_delta_dict[key] = item
+    
+
+    with open(client_conf_path,'w') as client_conf_file:
+        client_conf_file.write(json.dumps(client_info_dict, indent=2, ensure_ascii=False))
+        client_conf_file.close()
+
+    return client_info_delta_dict
+
+def send_client_info(client_info_dict,attachment_dict):
+    for client_email,infos in client_info_dict.items():
+        body = ""
+        attachment_files = []
+        subject = "代理信息"
+        for key,item in infos.items():
+            body += f"{key}:\n{item}\n"
+            body += "\n"
+        if "serv_vpn_url" in infos:
+            attachment_files.append(attachment_dict["vpn"])
+        if "serv_nf_email" in infos:
+            attachment_files.append(attachment_dict["nf"])
+        send_email(subject,body,client_email,attachment_files)
+    
+def send_specific_info(input_email,client_conf_path):
+    with open(client_conf_path,'r') as client_conf_file:
+        client_info_dict = json.load(client_conf_file)
+    if input_email in client_info_dict:
+        output_dict = {}
+        output_dict[input_email] = client_info_dict[input_email]
+        send_client_info(output_dict,attachment_dict)
+
+
+
+    
+
+if __name__ == '__main__':
+    hash_path = "./configuration/hash.json"
+    name_list_path = "./configuration/name_list.xlsx"
+    client_conf_path = "./configuration/client_info.json"
+    column_serv_email = 1
+    column_serv_email_pw = 2
+    column_serv_nf_pw = 3
+    column_serv_vpn_pw = 4
+    column_client_vpn_email = 5
+    column_client_nf_pin = 6
+    column_client_nf_email = 7
+    attachment_dict = {"vpn":"./attachment/netflix使用说明.pdf","nf":"./attachment/代理操作说明.pdf"}
+
+    input_email = None
+
+    if hash_uniform_check(hash_path,name_list_path):
+        max_row_list = name_list_check(name_list_path)
+        name_list_dict_gen(name_list_path,max_row_list)
+        client_info_dict = name_list_parse(name_list_path,max_row_list)
+        client_info_delta_dict = client_info_compare(client_info_dict,client_conf_path)
+        send_client_info(client_info_delta_dict,attachment_dict)
+        hash_update(hash_path,name_list_path)
+        print(1)
+    else:
+        max_row_list = name_list_check(name_list_path)
+        name_list_dict_gen(name_list_path,max_row_list)
+        client_info_dict = name_list_parse(name_list_path,max_row_list)
+        client_info_delta_dict = client_info_compare(client_info_dict,client_conf_path)
+        send_client_info(client_info_delta_dict,attachment_dict)
+        hash_update(hash_path,name_list_path)
+        print(0)
+    
+    # input_email = "liyang.tjtj@gmail.com"
+    send_specific_info(input_email,client_conf_path)
+
+
+    
