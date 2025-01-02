@@ -4,6 +4,7 @@ import hashlib
 import openpyxl
 import crcmod
 from send_email import send_email
+from init import *
 
 def hash_uniform_check(hash_path,name_list_path):
     with open(hash_path) as hash_file:
@@ -189,6 +190,21 @@ def send_client_info(client_info_dict,attachment_dict):
         if "serv_nf_email" in infos:
             attachment_files.append(attachment_dict["nf"])
         send_email(subject,body,client_email,attachment_files)
+
+
+def updata_name_list(name_list_path,client_conf_path,hash_path,attachment_dict):
+    if hash_uniform_check(hash_path,name_list_path):
+        print("name list is not updated")
+        return True
+    else:
+        max_row_list = name_list_check(name_list_path)
+        name_list_dict_gen(name_list_path,max_row_list)
+        client_info_dict = name_list_parse(name_list_path,max_row_list)
+        client_info_delta_dict = client_info_compare(client_info_dict,client_conf_path)
+        send_client_info(client_info_delta_dict,attachment_dict)
+        hash_update(hash_path,name_list_path)
+        print("name list is updated")
+        return False
     
 def send_specific_info(input_email,client_conf_path):
     with open(client_conf_path,'r') as client_conf_file:
@@ -203,39 +219,9 @@ def send_specific_info(input_email,client_conf_path):
     
 
 if __name__ == '__main__':
-    hash_path = "./configuration/hash.json"
-    name_list_path = "./configuration/name_list.xlsx"
-    client_conf_path = "./configuration/client_info.json"
-    column_serv_email = 1
-    column_serv_email_pw = 2
-    column_serv_nf_pw = 3
-    column_serv_vpn_pw = 4
-    column_client_vpn_email = 5
-    column_client_nf_pin = 6
-    column_client_nf_email = 7
-    attachment_dict = {"vpn":"./attachment/netflix使用说明.pdf","nf":"./attachment/代理操作说明.pdf"}
 
-    input_email = None
-
-    if hash_uniform_check(hash_path,name_list_path):
-        max_row_list = name_list_check(name_list_path)
-        name_list_dict_gen(name_list_path,max_row_list)
-        client_info_dict = name_list_parse(name_list_path,max_row_list)
-        client_info_delta_dict = client_info_compare(client_info_dict,client_conf_path)
-        send_client_info(client_info_delta_dict,attachment_dict)
-        hash_update(hash_path,name_list_path)
-        print(1)
-    else:
-        max_row_list = name_list_check(name_list_path)
-        name_list_dict_gen(name_list_path,max_row_list)
-        client_info_dict = name_list_parse(name_list_path,max_row_list)
-        client_info_delta_dict = client_info_compare(client_info_dict,client_conf_path)
-        send_client_info(client_info_delta_dict,attachment_dict)
-        hash_update(hash_path,name_list_path)
-        print(0)
+    print(1)
     
-    # input_email = "liyang.tjtj@gmail.com"
-    send_specific_info(input_email,client_conf_path)
 
 
     

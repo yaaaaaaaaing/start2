@@ -1,0 +1,12 @@
+hash_path = "./configuration/hash.json"
+name_list_path = "./configuration/name_list.xlsx"
+client_conf_path = "./configuration/client_info.json"
+deadline_dict_path = "./configuration/deadline_info.json"
+column_serv_email = 1
+column_serv_email_pw = 2
+column_serv_nf_pw = 3
+column_serv_vpn_pw = 4
+column_client_vpn_email = 5
+column_client_nf_pin = 6
+column_client_nf_email = 7
+attachment_dict = {"vpn":"./attachment/netflix使用说明.pdf","nf":"./attachment/代理操作说明.pdf"}
