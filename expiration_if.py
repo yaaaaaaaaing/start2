@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import datetime
 from register_check_if import *

@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 hash_path = "./configuration/hash.json"
 name_list_path = "./configuration/name_list.xlsx"
 client_conf_path = "./configuration/client_info.json"
