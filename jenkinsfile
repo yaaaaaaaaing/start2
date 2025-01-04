@@ -1,0 +1,13 @@
+
+pipeline{
+    agent any
+    
+    stages{
+        stage('expiration_check'){
+            steps{
+                    bat ("python expiration_if.py ")
+            }
+            
+    }
+}
+}
