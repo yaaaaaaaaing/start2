@@ -6,30 +6,6 @@ import crcmod
 from send_email import send_email
 from init import *
 
-def hash_uniform_check(hash_path,name_list_path):
-    with open(hash_path) as hash_file:
-        hash_dict = json.load(hash_file)
-    hash_name_list_hist = hash_dict["name_list"]
-
-    with open(name_list_path,'rb') as name_list_file:
-        name_list_str = name_list_file.read()
-        hash_name_list = hashlib.md5(name_list_str).hexdigest()
-    if hash_name_list != hash_name_list_hist:
-        return False
-    else:
-        return True
-
-def hash_update(hash_path,name_list_path):
-    with open(name_list_path,'rb') as name_list_file:
-        name_list_str = name_list_file.read()
-        hash_name_list = hashlib.md5(name_list_str).hexdigest()
-    
-    update_hash_dict = {}
-    update_hash_dict["name_list"] = hash_name_list
-    with open(hash_path,'w') as hash_file:
-        hash_file.write(json.dumps(update_hash_dict, indent=2, ensure_ascii=False))
-        hash_file.close()
-
 def name_list_check(name_list_path):
 
     # 检查每个server email是否包含五个子服务
@@ -39,13 +15,13 @@ def name_list_check(name_list_path):
     name_list_ws = name_list_wb["list"]
     client_vpn_list = []
     client_nf_list = []
-    serv_email_conter = 4
+    serv_email_conter = num_max_slots - 1
     for row in range(2,name_list_ws.max_row+1):
         serv_email = name_list_ws.cell(row=row,column=column_serv_email).value
         client_vpn_email = name_list_ws.cell(row=row,column=column_client_vpn_email).value
         client_nf_email = name_list_ws.cell(row=row,column=column_client_nf_email).value
         if serv_email:
-            if serv_email_conter != 4:
+            if serv_email_conter != num_max_slots - 1:
                 print(f"serv_email {serv_email} is not in the right row")
                 exit(1)
             elif serv_email == "#endofdata":
@@ -193,18 +169,15 @@ def send_client_info(client_info_dict,attachment_dict):
 
 
 def updata_name_list(name_list_path,client_conf_path,hash_path,attachment_dict):
-    if hash_uniform_check(hash_path,name_list_path):
-        print("name list is not updated")
-        return True
-    else:
-        max_row_list = name_list_check(name_list_path)
-        name_list_dict_gen(name_list_path,max_row_list)
-        client_info_dict = name_list_parse(name_list_path,max_row_list)
-        client_info_delta_dict = client_info_compare(client_info_dict,client_conf_path)
-        send_client_info(client_info_delta_dict,attachment_dict)
-        hash_update(hash_path,name_list_path)
-        print("name list is updated")
+    max_row_list = name_list_check(name_list_path)
+    name_list_dict_gen(name_list_path,max_row_list)
+    client_info_dict = name_list_parse(name_list_path,max_row_list)
+    client_info_delta_dict = client_info_compare(client_info_dict,client_conf_path)
+    if client_info_delta_dict == {}:
         return False
+    send_client_info(client_info_delta_dict,attachment_dict)
+    print("name list is updated")
+    return True
     
 def send_specific_info(input_email,client_conf_path):
     with open(client_conf_path,'r') as client_conf_file:
