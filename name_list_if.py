@@ -4,7 +4,7 @@ import json
 import hashlib
 import openpyxl
 import crcmod
-from send_email import send_email
+from send_receive_email import send_email
 from init import *
 
 def name_list_check(name_list_path):
