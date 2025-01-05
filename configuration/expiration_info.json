@@ -12,25 +12,5 @@
             "vpn account": "2025-01-07 05:41:03",
             "nf account": "2025-01-07 05:41:03"
         }
-    },
-    "993313387@qq.com": {
-        "history_list": {
-            "vpn account": [],
-            "nf account": []
-        },
-        "expiration_list": {
-            "vpn account": "2025-01-07 05:44:01",
-            "nf account": "2025-01-07 05:44:01"
-        }
-    },
-    "772117987@qq.com": {
-        "history_list": {
-            "vpn account": [],
-            "nf account": []
-        },
-        "expiration_list": {
-            "vpn account": "2025-01-05 06:12:58",
-            "nf account": "2025-01-05 06:12:58"
-        }
     }
 }
