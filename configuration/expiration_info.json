@@ -1,16 +1,16 @@
 {
     "liyang.tjtj@gmail.com": {
         "history_list": {
-            "vpn account": [
+            "vpn_account": [
                 "2025-01-05 05:17:00"
             ],
-            "nf account": [
+            "nf_account": [
                 "2025-01-05 05:16:00"
             ]
         },
         "expiration_list": {
-            "vpn account": "2025-01-07 05:41:03",
-            "nf account": "2025-01-07 05:41:03"
+            "vpn_account": "2025-01-07 05:41:03",
+            "nf_account": "2025-01-07 05:41:03"
         }
     }
 }

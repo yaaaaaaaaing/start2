@@ -50,6 +50,7 @@ def receive_email():
     mail.select("inbox")
     status, messages = mail.search(None, 'UNSEEN')  # 'UNSEEN' 表示未读邮件
 
+    receive_text_list = []
     if status == "OK":
         mail_ids = messages[0].split()
 
@@ -68,14 +69,18 @@ def receive_email():
                             content_disposition = str(part.get("Content-Disposition"))
                             if content_type == "text/plain" and "attachment" not in content_disposition:
                                 body = part.get_payload(decode=True).decode()
+                                receive_text_list.append(body)
 
                     else:
                         content_type = msg.get_content_type()
                         if content_type == "text/plain":
                             body = msg.get_payload(decode=True).decode()
+                            receive_text_list.append(body)
     else:
         print("未能获取邮件列表。")
     mail.logout()
+
+    return receive_text_list
 
 
 # 使用示例

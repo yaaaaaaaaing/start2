@@ -17,12 +17,12 @@ column_client_nf_email = 9
 attachment_dict = {"vpn":"./attachment/netflix使用说明.pdf","nf":"./attachment/代理操作说明.pdf"}
 
 mapping_dict = {
-    "vpn account": {
+    "vpn_account": {
         "client in name list": column_client_vpn_email,
         "expiration data in name list": column_serv_vpn_expiration,
         "attachment": "./attachment/netflix使用说明.pdf"
     },
-    "nf account": {
+    "nf_account": {
         "client in name list": column_client_nf_email,
         "expiration data in name list": column_serv_nf_expiration,
         "attachment": "./attachment/代理操作说明.pdf"
