@@ -176,7 +176,7 @@ def updata_name_list(name_list_path,client_conf_path,hash_path,attachment_dict):
     client_info_delta_dict = client_info_compare(client_info_dict,client_conf_path)
     if client_info_delta_dict == {}:
         return False
-    send_client_info(client_info_delta_dict,attachment_dict)
+    # send_client_info(client_info_delta_dict,attachment_dict)
     print("name list is updated")
     return True
     
