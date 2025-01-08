@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
+import os
 
 import imaplib
 import email
@@ -21,13 +22,14 @@ def send_email(subject, body, to_email, attachments=[]):
     msg.attach(MIMEText(body, 'plain'))
 
     for attachment in attachments:
+        attachment_name = os.path.basename(attachment)
         with open(attachment, 'rb') as file:
-            part = MIMEBase('application', 'pdf')
+            part = MIMEBase('application', 'octet-stream')
             part.set_payload(file.read())
             encoders.encode_base64(part)
             part.add_header(
                 'Content-Disposition',
-                f'attachment; filename={attachment.split("/")[-1]}'
+                f'attachment; filename={attachment_name}'
             )
             msg.attach(part)
 
