@@ -36,14 +36,14 @@ def push_to_github(change_file_list,name_list_path,hash_json_file):
     change_file_list.append(name_list_path)
     for file in change_file_list:
         try:
-            subprocess.call(f"git add {file}")
+            subprocess.call(f"git add {file}", shell=True)
         except:
             continue
 
     commit_message = 'git commit -m "Update configs"'
-    subprocess.call(commit_message)
+    subprocess.call(commit_message, shell=True)
     
-    subprocess.call("git push")
+    subprocess.call("git push", shell=True)
 
 def gitpush_json(config_path,hash_path,name_list_path):
     change_file_list = hash_check(config_path,"json",hash_path)

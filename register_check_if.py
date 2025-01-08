@@ -3,6 +3,7 @@ import datetime
 import json
 from init import *
 from name_list_if import *
+from gitpush_if import *
 
 def datetime_to_str(dt):
     return dt.strftime("%Y-%m-%d %H:%M:%S")
@@ -14,23 +15,21 @@ def update_client_expiration(register_check_dict,expiration_dict_path):
     with open(expiration_dict_path, 'r') as file:
         expiration_dict = json.load(file)
     for client_email,type_info_list in register_check_dict.items():
-        if client_email in expiration_dict:
-            for type_info in type_info_list:
-                if type_info["type"] in expiration_dict[client_email]["expiration_list"]:
-                    if type_info["days"] >0: ##只有续费时才更新history list
+        for type_info in type_info_list:
+            if type_info["days"] > 0:
+                if client_email in expiration_dict:
+                    if type_info["type"] in expiration_dict[client_email]["expiration_list"]:
                         expiration_dict[client_email]["history_list"][type_info["type"]].append(expiration_dict[client_email]["expiration_list"][type_info["type"]])
-                    expiration_dict[client_email]["expiration_list"][type_info["type"]] = datetime_to_str(max(datetime.datetime.now(),str_to_datetime(expiration_dict[client_email]["expiration_list"][type_info["type"]])) + datetime.timedelta(days=type_info["days"]) )    
+                        expiration_dict[client_email]["expiration_list"][type_info["type"]] = datetime_to_str(max(datetime.datetime.now(),str_to_datetime(expiration_dict[client_email]["expiration_list"][type_info["type"]])) + datetime.timedelta(days=type_info["days"]) )    
+                    else:
+                        # 对于新增的数据类型，初始化history list，新建expiration list
+                        expiration_dict[client_email]["history_list"][type_info["type"]] = []
+                        expiration_dict[client_email]["expiration_list"][type_info["type"]] = datetime_to_str(datetime.datetime.now() + datetime.timedelta(days=type_info["days"]))
                 else:
-                    # 对于新增的数据类型，初始化history list，新建expiration list
-                    expiration_dict[client_email]["history_list"][type_info["type"]] = []
-                    expiration_dict[client_email]["expiration_list"][type_info["type"]] = datetime_to_str(datetime.datetime.now() + datetime.timedelta(days=type_info["days"]))
-        else:
-            expiration_dict[client_email] = {
-                "history_list": {type_info["type"]: [] for type_info in type_info_list},
-                "expiration_list": {type_info["type"]: None for type_info in type_info_list}
-            }
-            for type_info in type_info_list:
-                expiration_dict[client_email]["expiration_list"][type_info["type"]] = datetime_to_str(datetime.datetime.now() + datetime.timedelta(days=type_info["days"]))
+                    expiration_dict[client_email] = {
+                        "history_list": {type_info["type"]: []},
+                        "expiration_list": {type_info["type"]: datetime_to_str(datetime.datetime.now() + datetime.timedelta(days=type_info["days"]))}
+                    }
     with open(expiration_dict_path, 'w') as file:
         json.dump(expiration_dict, file, indent=4)     
 
@@ -68,9 +67,7 @@ if __name__ == '__main__':
     type_info_list = [{"type":"vpn_account","days":0},{"type":"nf_account","days":0}]
     register_check_dict = {}
     register_check_dict[client_email] = type_info_list
-    client_email = "993313387@qq.com"
-    type_info_list = [{"type":"vpn_account","days":10},{"type":"nf_account","days":10}]
-    register_check_dict[client_email] = type_info_list
+    
 
 
     update_client_expiration(register_check_dict,expiration_dict_path)
