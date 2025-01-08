@@ -20,5 +20,15 @@
         "expiration_list": {
             "nf_account": "2025-02-07 23:27:23"
         }
+    },
+    "2106726570@qq.com": {
+        "history_list": {
+            "vpn_account": [],
+            "nf_account": []
+        },
+        "expiration_list": {
+            "vpn_account": "2025-02-07 23:31:42",
+            "nf_account": "2025-02-07 23:31:42"
+        }
     }
 }
