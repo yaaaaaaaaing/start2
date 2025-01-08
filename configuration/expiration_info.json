@@ -12,5 +12,13 @@
             "vpn_account": "2025-01-07 05:41:03",
             "nf_account": "2025-01-07 05:41:03"
         }
+    },
+    "kvd2011@hotmail.com": {
+        "history_list": {
+            "nf_account": []
+        },
+        "expiration_list": {
+            "nf_account": "2025-02-07 23:27:23"
+        }
     }
 }
