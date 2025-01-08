@@ -15,7 +15,7 @@ column_serv_vpn_expiration = 6
 column_client_vpn_email = 7
 column_client_nf_pin = 8
 column_client_nf_email = 9
-attachment_dict = {"vpn":"./attachment/netflix使用说明.pdf","nf":"./attachment/代理操作说明.pdf"}
+attachment_dict = {"vpn":"./attachment/netflix_guideline.pdf","nf":"./attachment/vpn_guideline.pdf"}
 
 mapping_dict = {
     "vpn_account": {
