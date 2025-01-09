@@ -68,10 +68,12 @@ def add_account_to_codecheck_dict(client_email,client_conf_path,code_check_dict_
         code_check_dict = json.load(file)
     if client_email not in code_check_dict:
         code_check_dict[client_email] = {}
-    for type,type_info in mapping_dict:
+    for type,type_info in mapping_dict.items():
         if type_info["server email tag in name list"] in client_conf_info[client_email]:
             if type not in code_check_dict[client_email]:
                 code_check_dict[client_email][type] = {"server email":client_conf_info[client_email][type_info["server email tag in name list"]],"check timer": 0}
+    with open(code_check_dict_path, 'w') as file:
+        json.dump(code_check_dict, file, indent=4)
 
 if __name__ == '__main__':
     client_email = "liyang.tjtj@gmail.com"
