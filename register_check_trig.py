@@ -30,6 +30,10 @@ if __name__ == '__main__':
     update_client_expiration(register_check_dict,expiration_dict_path)
     add_account_to_name_list(register_check_dict,name_list_path)
     updata_name_list(name_list_path,client_conf_path,hash_path,attachment_dict)
+    for client_email in register_check_dict:
+        add_account_to_codecheck_dict(client_email,client_conf_path,code_check_dict_path,mapping_dict)
+
+    
 
     gitpush_json(config_path,hash_path,name_list_path)
 

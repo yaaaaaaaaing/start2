@@ -117,10 +117,10 @@ def name_list_parse(name_list_path,max_row_list):
         for client_vpn_email in email_info_dict["client_vpn_email"]:
             if client_vpn_email not in client_info_dict:
                 client_info_dict[client_vpn_email] = {}
-                # client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
+                client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_vpn_email]["serv_vpn_url"] = email_info_dict["serv_vpn_url"]
             else:
-                # client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
+                client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_vpn_email]["serv_vpn_url"] = email_info_dict["serv_vpn_url"]
         for client_nf_email in email_info_dict["client_nf_email"]:
             if client_nf_email not in client_info_dict:
