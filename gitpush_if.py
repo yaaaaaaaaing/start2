@@ -31,7 +31,7 @@ def hash_check(file_path,file_type,hash_json_file): # 检查json文件是否发�
 
     return change_file_list
 
-def push_to_github(change_file_list,name_list_path,hash_json_file):
+def push_to_github(change_file_list,name_list_path,hash_json_file,commit_message):
     change_file_list.append(hash_json_file)
     change_file_list.append(name_list_path)
     for file in change_file_list:
@@ -40,12 +40,12 @@ def push_to_github(change_file_list,name_list_path,hash_json_file):
         except:
             continue
 
-    commit_message = 'git commit -m "Update configs"'
-    subprocess.call(commit_message, shell=True)
+    commit = f'git commit -m "{commit_message}"'
+    subprocess.call(commit, shell=True)
     
     subprocess.call("git push", shell=True)
 
-def gitpush_json(config_path,hash_path,name_list_path):
+def gitpush_json(config_path,hash_path,name_list_path,commit_message):
     change_file_list = hash_check(config_path,"json",hash_path)
     if len(change_file_list) > 0:
-        push_to_github(change_file_list,name_list_path,hash_path)
+        push_to_github(change_file_list,name_list_path,hash_path,commit_message)
