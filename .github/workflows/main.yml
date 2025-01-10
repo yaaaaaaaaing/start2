@@ -1,0 +1,28 @@
+name: Run register Script
+
+on:
+  workflow_dispatch:  # 仅手动触发
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest  # 使用 GitHub 提供的 Ubuntu 虚拟机
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # 拉取仓库代码
+        with:
+          ref: develop  # 指定要拉取的分支名
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # 选择需要的 Python 版本
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt  # 如果需要依赖，可以在项目中包含 requirements.txt
+        continue-on-error: true  # 如果没有 requirements.txt 文件，则跳过
+
+      - name: Run Python script
+        run: |
+          python register_check_trig.py  # 替换为你的 .py 文件路径
