@@ -10,7 +10,7 @@ pipeline{
     stages{
         stage('expiration_check'){
             steps{
-                    bat ("python expiration_if.py ")
+                    bat ("python expiration_check_trigger.py ")
             }
             
     }
