@@ -3,6 +3,9 @@ name: Run register Script
 on:
   workflow_dispatch:  # 仅手动触发
 
+permissions:
+  contents: write 
+
 jobs:
   run-script:
     runs-on: ubuntu-latest  # 使用 GitHub 提供的 Ubuntu 虚拟机
