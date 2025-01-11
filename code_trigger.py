@@ -8,9 +8,17 @@ import re
 from init import mapping_dict
 
 
-def get_client_code_info(client_email,check_type):
+def get_client_code_info(client_email,check_type,proxy_addr,proxy_port):
     url = f"https://raw.githubusercontent.com/yaaaaaaaaing/start2/refs/heads/develop/configuration/code_check_info.json"
-    response = requests.get(url)
+
+    if proxy_addr is not "" and proxy_port is not "":
+        proxies = {
+        "http": f"http://{proxy_addr}:{proxy_port}",  # HTTP 代理
+        "https": f"http://{proxy_addr}:{proxy_port}",  # HTTPS 代理
+    }
+        response = requests.get(url,proxies=proxies)
+    else:
+        response = requests.get(url)
     response.raise_for_status()  # 检查请求是否成功
     json_data = response.json()  # 将响应内容解析为 JSON\
     try:
@@ -24,7 +32,7 @@ def get_client_code_info(client_email,check_type):
         return
     return server_check_info
 
-def update_client_code_info(client_email,check_type):
+def update_client_code_info(client_email,check_type,proxy_addr,proxy_port):
     repo_owner = "yaaaaaaaaing" 
     repo_name = "start2" 
     file_path = "configuration/code_check_info.json" 
@@ -33,8 +41,14 @@ def update_client_code_info(client_email,check_type):
 
     file_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents/{file_path}"
     headers = {"Authorization": f"token {token}"}
-
-    response = requests.get(file_url, headers=headers)
+    if proxy_addr is not "" and proxy_port is not "":
+        proxies = {
+        "http": f"http://{proxy_addr}:{proxy_port}",  # HTTP 代理
+        "https": f"http://{proxy_addr}:{proxy_port}",  # HTTPS 代理
+    }
+        response = requests.get(file_url, headers=headers,proxies=proxies)
+    else:
+        response = requests.get(file_url, headers=headers)
     response.raise_for_status()
     file_info = response.json()
     sha = file_info["sha"] 
@@ -55,8 +69,13 @@ def update_client_code_info(client_email,check_type):
         print("The registration email or check type does not exist")
         return
 
-    update_response = requests.put(file_url, headers=headers, json=update_data)
-    update_response.raise_for_status()
+    if proxy_addr is not "" and proxy_port is not "":
+        update_response = requests.put(file_url, headers=headers, json=update_data,proxies=proxies)
+        update_response.raise_for_status()
+    else:
+        update_response = requests.put(file_url, headers=headers, json=update_data)
+        update_response.raise_for_status()
+    
 
 def receive_gmail_email(server_check_email,server_password):
     imap_server = "imap.gmail.com"
@@ -108,12 +127,12 @@ def parse_check_code(receive_text_list,server_tag):
                 if re.fullmatch(pattern, body_str):
                     first_match = body_str
                     flag_code_found = True
-                    print(f"Check code is {first_match}")
                     break
     if flag_code_found == False:
         print("No check code found, please trigger the check code email again")
         exit(1)
-
+    
+    return first_match
 
 
 if __name__ == "__main__":
@@ -122,14 +141,17 @@ if __name__ == "__main__":
         selections_str += type + " "
     client_email = input("Please input the your registration email: ")
     check_type = input(f"Please input the check type ({selections_str}): ")
+    proxy_addr = input(f"Please input proxy address:")
+    proxy_port = input(f"Please input proxy port:")
     
-    server_check_info = get_client_code_info(client_email,check_type)
+    server_check_info = get_client_code_info(client_email,check_type,proxy_addr,proxy_port)
 
     server_check_email = server_check_info["server email"]
     server_password = server_check_info["server email pw"]
     server_tag = server_check_info["tag"]
     receive_text_list = receive_gmail_email(server_check_email,server_password)
-    parse_check_code(receive_text_list,server_tag)
+    first_match = parse_check_code(receive_text_list,server_tag)
 
 
-    update_client_code_info(client_email,check_type)
+    update_client_code_info(client_email,check_type,proxy_addr,proxy_port)
+    print(f"check code is {first_match}")
