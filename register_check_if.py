@@ -57,7 +57,7 @@ def add_account_to_name_list(register_check_dict,name_list_path):
                             break
                     if add_account_flag == False:
                         print("No empty row in name list, one more server email should be registered.")
-                        exit()
+                        exit(1)
 
     name_list_wb.save(name_list_path)
 
@@ -71,7 +71,9 @@ def add_account_to_codecheck_dict(client_email,client_conf_path,code_check_dict_
     for type,type_info in mapping_dict.items():
         if type_info["server email tag in name list"] in client_conf_info[client_email]:
             if type not in code_check_dict[client_email]:
-                code_check_dict[client_email][type] = {"server email":client_conf_info[client_email][type_info["server email tag in name list"]],"check timer": 0}
+                code_check_dict[client_email][type] = {"server email":client_conf_info[client_email][type_info["server email tag in name list"]],
+                                                       "server email pw":client_conf_info[client_email][type_info["server email pw tag in name list"]],
+                                                        "check timer": 0,"tag":type_info["tag"]}
     with open(code_check_dict_path, 'w') as file:
         json.dump(code_check_dict, file, indent=4)
 

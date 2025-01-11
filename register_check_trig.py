@@ -27,18 +27,18 @@ if __name__ == '__main__':
     receive_text_list = receive_email()
     register_check_dict = receive_text_parse(receive_text_list,token_register)
 
-    update_client_expiration(register_check_dict,expiration_dict_path)
     add_account_to_name_list(register_check_dict,name_list_path)
-    updata_name_list(name_list_path,client_conf_path,hash_path,attachment_dict)
+    update_client_expiration(register_check_dict,expiration_dict_path)
+    updata_name_list(name_list_path,client_conf_path,hash_path)
     commit_message = ""
     for client_email in register_check_dict:
         add_account_to_codecheck_dict(client_email,client_conf_path,code_check_dict_path,mapping_dict)
         commit_message += "update config for " + client_email + " \n"
 
-    
+    for client_email in register_check_dict:
+        send_specific_info(client_email,client_conf_path)
 
     gitpush_json(config_path,hash_path,name_list_path,commit_message)
 
-    for client_email in register_check_dict:
-        send_specific_info(client_email,client_conf_path)
+    
 

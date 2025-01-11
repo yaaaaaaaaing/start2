@@ -16,19 +16,26 @@ column_serv_vpn_expiration = 6
 column_client_vpn_email = 7
 column_client_nf_pin = 8
 column_client_nf_email = 9
-attachment_dict = {"vpn":"./attachment/netflix_guideline.pdf","nf":"./attachment/vpn_guideline.pdf"}
+
+release_email_dict = {"output client infos":["serv_vpn_url","serv_nf_email","serv_nf_pin"],
+                      "attchment_mapping":{"serv_vpn_url":"./attachment/netflix_guideline.pdf",
+                                            "serv_nf_email":"./attachment/vpn_guideline.pdf"}}
 
 mapping_dict = {
     "vpn_account": {
         "client in name list": column_client_vpn_email,
         "expiration data in name list": column_serv_vpn_expiration,
         "attachment": "./attachment/netflix使用说明.pdf",
-        "server email tag in name list": "serv_nf_email"
+        "server email tag in name list": "serv_nf_email",
+        "server email pw tag in name list": "serv_vpn_email_pw",
+        "tag": "vpn"
     },
     "nf_account": {
         "client in name list": column_client_nf_email,
         "expiration data in name list": column_serv_nf_expiration,
         "attachment": "./attachment/代理操作说明.pdf",
-        "server email tag in name list": "serv_nf_email"
+        "server email tag in name list": "serv_nf_email",
+        "server email pw tag in name list": "serv_nf_email_pw",
+        "tag": "Netflix"
     }
 }

@@ -53,6 +53,7 @@ def name_list_check(name_list_path):
     return max_row_list
 
 def name_list_dict_gen(name_list_path,max_row_list):
+    # 生成各类密码/pin
     name_list_wb = openpyxl.load_workbook(name_list_path)
     name_list_ws = name_list_wb["list"]
     for row in range(2,max_row_list):
@@ -66,11 +67,8 @@ def name_list_dict_gen(name_list_path,max_row_list):
         crc16_func_pin = crcmod.mkCrcFun(0x18005, initCrc=0, xorOut=0xFFFF, rev=True)
         if serv_email is not None:
             serv_email_data = serv_email.encode('utf-8')
-            # name_list_ws.cell(row=row,column=column_serv_email_pw).value = "PassWord~" + hex(crc16_func_email(serv_email_data)).replace("0x","")
             name_list_ws.cell(row=row,column=column_serv_nf_pw).value = "PassWord~" + hex(crc16_func_nf(serv_email_data)).replace("0x","")
-            # name_list_ws.cell(row=row,column=column_serv_vpn_pw).value = "PassWord~" + hex(crc16_func_vpn(serv_email_data)).replace("0x","")
             counter = 0
-        if client_nf_email is not None:
             client_nf_email_data = serv_email_data+hex(counter).encode('utf-8')
             name_list_ws.cell(row=row,column=column_client_nf_pin).value = str(crc16_func_pin(client_nf_email_data)).zfill(4)[:4] + f" 位置{counter+1}"
         counter += 1
@@ -117,20 +115,24 @@ def name_list_parse(name_list_path,max_row_list):
         for client_vpn_email in email_info_dict["client_vpn_email"]:
             if client_vpn_email not in client_info_dict:
                 client_info_dict[client_vpn_email] = {}
+                client_info_dict[client_vpn_email]["serv_vpn_email_pw"] = email_info_dict["serv_email_pw"]
                 client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_vpn_email]["serv_vpn_url"] = email_info_dict["serv_vpn_url"]
             else:
+                client_info_dict[client_vpn_email]["serv_vpn_email_pw"] = email_info_dict["serv_email_pw"]
                 client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_vpn_email]["serv_vpn_url"] = email_info_dict["serv_vpn_url"]
         for client_nf_email in email_info_dict["client_nf_email"]:
             if client_nf_email not in client_info_dict:
                 client_info_dict[client_nf_email] = {}
+                client_info_dict[client_vpn_email]["serv_nf_email_pw"] = email_info_dict["serv_email_pw"]
                 client_info_dict[client_nf_email]["serv_nf_email"] = email_info_dict["serv_email"]
-                # client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
+                client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
                 client_info_dict[client_nf_email]["serv_nf_pin"] = email_info_dict["client_pin_email"][email_info_dict["client_nf_email"].index(client_nf_email)]
             else:
+                client_info_dict[client_vpn_email]["serv_nf_email_pw"] = email_info_dict["serv_email_pw"]
                 client_info_dict[client_nf_email]["serv_nf_email"] = email_info_dict["serv_email"]
-                # client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
+                client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
                 client_info_dict[client_nf_email]["serv_nf_pin"] = email_info_dict["client_pin_email"][email_info_dict["client_nf_email"].index(client_nf_email)]
 
     return client_info_dict
@@ -154,29 +156,29 @@ def client_info_compare(client_info_dict,client_conf_path):
 
     return client_info_delta_dict
 
-def send_client_info(client_info_dict,attachment_dict):
+def send_client_info(client_info_dict,release_email_dict):
     for client_email,infos in client_info_dict.items():
         body = ""
         attachment_files = []
         subject = "代理信息"
+        release_info_list = release_email_dict["output client infos"]
         for key,item in infos.items():
-            body += f"{key}:\n{item}\n"
-            body += "\n"
-        if "serv_vpn_url" in infos:
-            attachment_files.append(attachment_dict["vpn"])
-        if "serv_nf_email" in infos:
-            attachment_files.append(attachment_dict["nf"])
+            if key in release_info_list:
+                body += f"{key}:\n{item}\n"
+                body += "\n"
+        for key,item in release_email_dict["attchment_mapping"].items():
+            if key in infos:
+                attachment_files.append(release_email_dict["attchment_mapping"][key])   
         send_email(subject,body,client_email,attachment_files)
 
 
-def updata_name_list(name_list_path,client_conf_path,hash_path,attachment_dict):
+def updata_name_list(name_list_path,client_conf_path,hash_path):
     max_row_list = name_list_check(name_list_path)
     name_list_dict_gen(name_list_path,max_row_list)
     client_info_dict = name_list_parse(name_list_path,max_row_list)
     client_info_delta_dict = client_info_compare(client_info_dict,client_conf_path)
     if client_info_delta_dict == {}:
         return False
-    # send_client_info(client_info_delta_dict,attachment_dict)
     print("name list is updated")
     return True
     
@@ -186,7 +188,7 @@ def send_specific_info(input_email,client_conf_path):
     if input_email in client_info_dict:
         output_dict = {}
         output_dict[input_email] = client_info_dict[input_email]
-        send_client_info(output_dict,attachment_dict)
+        send_client_info(output_dict,release_email_dict)
 
 
 
