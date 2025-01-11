@@ -1,12 +1,14 @@
 {
     "liyang.tjtj@gmail.com": {
         "vpn_account": {
-            "server email": "ceshizhanghao31900@outlook.com",
-            "check timer": 0
+            "server email": "ceshizhanghao31901@gmail.com",
+            "check timer": 0,
+            "tag": "vpn"
         },
         "nf_account": {
-            "server email": "ceshizhanghao31900@outlook.com",
-            "check timer": 2
+            "server email": "ceshizhanghao31901@gmail.com",
+            "check timer": 0,
+            "tag": "Netflix"
         }
     }
 }
