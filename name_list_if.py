@@ -125,12 +125,12 @@ def name_list_parse(name_list_path,max_row_list):
         for client_nf_email in email_info_dict["client_nf_email"]:
             if client_nf_email not in client_info_dict:
                 client_info_dict[client_nf_email] = {}
-                client_info_dict[client_vpn_email]["serv_nf_email_pw"] = email_info_dict["serv_email_pw"]
+                client_info_dict[client_nf_email]["serv_nf_email_pw"] = email_info_dict["serv_email_pw"]
                 client_info_dict[client_nf_email]["serv_nf_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
                 client_info_dict[client_nf_email]["serv_nf_pin"] = email_info_dict["client_pin_email"][email_info_dict["client_nf_email"].index(client_nf_email)]
             else:
-                client_info_dict[client_vpn_email]["serv_nf_email_pw"] = email_info_dict["serv_email_pw"]
+                client_info_dict[client_nf_email]["serv_nf_email_pw"] = email_info_dict["serv_email_pw"]
                 client_info_dict[client_nf_email]["serv_nf_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
                 client_info_dict[client_nf_email]["serv_nf_pin"] = email_info_dict["client_pin_email"][email_info_dict["client_nf_email"].index(client_nf_email)]

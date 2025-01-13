@@ -35,10 +35,10 @@ if __name__ == '__main__':
         add_account_to_codecheck_dict(client_email,client_conf_path,code_check_dict_path,mapping_dict)
         commit_message += "update config for " + client_email + " \n"
 
-    for client_email in register_check_dict:
-        send_specific_info(client_email,client_conf_path)
+    # for client_email in register_check_dict:
+    #     send_specific_info(client_email,client_conf_path)
 
-    gitpush_json(config_path,hash_path,name_list_path,commit_message)
+    # gitpush_json(config_path,hash_path,name_list_path,commit_message)
 
     
 
