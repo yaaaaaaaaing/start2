@@ -33,6 +33,12 @@
             "server email pw": "gmunjnrjqwxbugrk",
             "check timer": 0,
             "tag": "Netflix"
+        },
+        "vpn_account": {
+            "server email": "ceshizhanghao31900@outlook.com",
+            "server email pw": "fxmanofndzdpbtbm",
+            "check timer": 0,
+            "tag": "vpn"
         }
     }
 }

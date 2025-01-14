@@ -71,10 +71,12 @@
     },
     "y67877687866231y@gmail.com": {
         "history_list": {
-            "nf_account": []
+            "nf_account": [],
+            "vpn_account": []
         },
         "expiration_list": {
-            "nf_account": "2025-02-13 14:53:05"
+            "nf_account": "2025-02-13 14:53:05",
+            "vpn_account": "2025-02-13 15:00:43"
         }
     }
 }
