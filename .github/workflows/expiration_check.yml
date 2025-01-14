@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3  # 拉取仓库代码
         with:
-          ref: develop  # 指定要拉取的分支名
+          ref: ${{ github.ref }}  # 指定要拉取的分支名
         
       - name: Set up Git
         run: |
