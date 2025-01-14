@@ -1,0 +1,40 @@
+name: Code Check Script
+
+on:
+  workflow_dispatch:  # 仅手动触发
+
+permissions:
+  contents: write 
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest  # 使用 GitHub 提供的 Ubuntu 虚拟机
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # 拉取仓库代码
+        with:
+          ref: ${{ github.ref }}  # 指定要拉取的分支名
+        
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"  # 配置用户名
+          git config user.email "github-actions[bot]@users.noreply.github.com"  # 配置邮箱
+
+      - name: Authenticate with GITHUB_TOKEN
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # 选择需要的 Python 版本
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt  # 如果需要依赖，可以在项目中包含 requirements.txt
+        continue-on-error: true  # 如果没有 requirements.txt 文件，则跳过
+
+      - name: Run Python script
+        run: |
+          python code_trigger.py  # 替换为你的 .py 文件路径
