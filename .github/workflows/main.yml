@@ -15,6 +15,11 @@ jobs:
         uses: actions/checkout@v3  # 拉取仓库代码
         with:
           ref: ${{ github.ref }}  # 指定要拉取的分支名
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         
       - name: Set up Git
         run: |
