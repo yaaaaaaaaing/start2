@@ -1,0 +1,4 @@
+[submodule "configuration"]
+	path = configuration
+	url = https://github.com/yaaaaaaaaing/start2_database.git
+	branch = develop
