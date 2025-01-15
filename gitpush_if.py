@@ -8,7 +8,7 @@ import subprocess
 
 
 def pull_database_from_github(config_path,database_branch):
-    if os.path.exists(config_path) is False:
+    if any(os.scandir(config_path)) is False:
         subprocess.call(f"git submodule update --init --recursive", shell=True)
         subprocess.call(f"git checkout {database_branch}", shell=True,cwd=config_path)
 
