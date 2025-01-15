@@ -9,7 +9,7 @@ from init import mapping_dict
 
 
 def get_client_code_info(client_email,check_type,proxy_addr,proxy_port):
-    url = f"https://raw.githubusercontent.com/yaaaaaaaaing/start2/refs/heads/develop/configuration/code_check_info.json"
+    url = f"https://raw.githubusercontent.com/yaaaaaaaaing/start2_database/refs/heads/develop/code_check_info.json"
 
     if proxy_addr is not "" and proxy_port is not "":
         proxies = {
@@ -34,8 +34,8 @@ def get_client_code_info(client_email,check_type,proxy_addr,proxy_port):
 
 def update_client_code_info(client_email,check_type,proxy_addr,proxy_port):
     repo_owner = "yaaaaaaaaing" 
-    repo_name = "start2" 
-    file_path = "configuration/code_check_info.json" 
+    repo_name = "start2_database" 
+    file_path = "code_check_info.json" 
     branch = "develop"
     token = ""
 

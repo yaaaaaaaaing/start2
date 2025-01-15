@@ -23,6 +23,9 @@ def receive_text_parse(receive_text_list,token_register):
     return register_check_dict
                     
 if __name__ == '__main__':
+    database_branch = "develop"
+    pull_database_from_github(config_path,database_branch)
+
     token_register = "tianjin-000"
     receive_text_list = receive_email()
     register_check_dict = receive_text_parse(receive_text_list,token_register)
@@ -38,6 +41,7 @@ if __name__ == '__main__':
     for client_email in register_check_dict:
         send_specific_info(client_email,client_conf_path)
 
+    commit_message = "update config for all client"
     gitpush_json(config_path,hash_path,name_list_path,commit_message)
 
     
