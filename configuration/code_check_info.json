@@ -54,5 +54,19 @@
             "check timer": 0,
             "tag": "vpn"
         }
+    },
+    "26223@qq.com": {
+        "vpn_account": {
+            "server email": "ceshizhanghao31901@gmail.com",
+            "server email pw": "gmunjnrjqwxbugrk",
+            "check timer": 0,
+            "tag": "vpn"
+        },
+        "nf_account": {
+            "server email": "ceshizhanghao31901@gmail.com",
+            "server email pw": "gmunjnrjqwxbugrk",
+            "check timer": 0,
+            "tag": "Netflix"
+        }
     }
 }
