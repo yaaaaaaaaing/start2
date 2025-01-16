@@ -69,8 +69,8 @@ def name_list_dict_gen(name_list_path,max_row_list):
             serv_email_data = serv_email.encode('utf-8')
             name_list_ws.cell(row=row,column=column_serv_nf_pw).value = "PassWord~" + hex(crc16_func_nf(serv_email_data)).replace("0x","")
             counter = 0
-            client_nf_email_data = serv_email_data+hex(counter).encode('utf-8')
-            name_list_ws.cell(row=row,column=column_client_nf_pin).value = str(crc16_func_pin(client_nf_email_data)).zfill(4)[:4] + f" 位置{counter+1}"
+        client_nf_email_data = serv_email_data+hex(counter).encode('utf-8')
+        name_list_ws.cell(row=row,column=column_client_nf_pin).value = str(crc16_func_pin(client_nf_email_data)).zfill(4)[:4] + f" 位置{counter+1}"
         counter += 1
         
     name_list_wb.save(name_list_path)

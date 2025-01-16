@@ -30,7 +30,7 @@ if __name__ == '__main__':
     add_account_to_name_list(register_check_dict,name_list_path)
     update_client_expiration(register_check_dict,expiration_dict_path)
     updata_name_list(name_list_path,client_conf_path,hash_path)
-    commit_message = ""
+    commit_message = "regenerate "
     for client_email in register_check_dict:
         add_account_to_codecheck_dict(client_email,client_conf_path,code_check_dict_path,mapping_dict)
         commit_message += "update config for " + client_email + " \n"
