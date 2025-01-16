@@ -68,5 +68,19 @@
             "check timer": 0,
             "tag": "Netflix"
         }
+    },
+    "leo@alu.scu.edu.cn": {
+        "vpn_account": {
+            "server email": "ceshizhanghao31901@gmail.com",
+            "server email pw": "gmunjnrjqwxbugrk",
+            "check timer": 0,
+            "tag": "vpn"
+        },
+        "nf_account": {
+            "server email": "ceshizhanghao31901@gmail.com",
+            "server email pw": "gmunjnrjqwxbugrk",
+            "check timer": 0,
+            "tag": "Netflix"
+        }
     }
 }

@@ -88,5 +88,15 @@
             "vpn_account": "2025-02-15 22:58:59",
             "nf_account": "2025-02-15 22:58:59"
         }
+    },
+    "leo@alu.scu.edu.cn": {
+        "history_list": {
+            "vpn_account": [],
+            "nf_account": []
+        },
+        "expiration_list": {
+            "vpn_account": "2025-02-15 15:02:46",
+            "nf_account": "2025-02-15 15:02:46"
+        }
     }
 }
