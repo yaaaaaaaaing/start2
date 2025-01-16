@@ -45,10 +45,12 @@ def push_database_to_github(change_file_list,name_list_path,hash_json_file,commi
             subprocess.call(f"git add {os.path.relpath(file, config_path)}", shell=True,cwd=config_path)
         except:
             continue
-
+    subprocess.call("git status", shell=True, cwd=config_path)
     commit = f'git commit -m "{commit_message}"'
     subprocess.call(commit, shell=True,cwd=config_path)
+    subprocess.call("git status", shell=True, cwd=config_path)
     subprocess.call("git push", shell=True,cwd=config_path)
+    subprocess.call("git status", shell=True, cwd=config_path)
 
 def gitpush_json(config_path,hash_path,name_list_path,commit_message):
     change_file_list = hash_check(config_path,"json",hash_path)
