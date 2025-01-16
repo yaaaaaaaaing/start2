@@ -25,6 +25,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"  # 配置用户名
           git config user.email "github-actions[bot]@users.noreply.github.com"  # 配置邮箱
+      
+      - name: Set up Git for submodule
+        run: |
+          git config --local user.name "yaaaaaaaaing"
+          git config --local user.email "liyang.tjtj@gmail.com"
+        cwd: "configuration"
 
       - name: Set up Python
         uses: actions/setup-python@v4
