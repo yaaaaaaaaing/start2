@@ -11,6 +11,7 @@ def pull_database_from_github(config_path,database_branch):
     if any(os.scandir(config_path)) is False:
         subprocess.call(f"git submodule update --init --recursive", shell=True)
         subprocess.call(f"git checkout {database_branch}", shell=True,cwd=config_path)
+        print("git checkout submodules mannually")
 
 def hash_check(config_path,file_type,hash_json_file): # 检查json文件是否发生变化
     with open(hash_json_file, 'r') as hash_file:
@@ -49,7 +50,7 @@ def push_database_to_github(change_file_list,name_list_path,hash_json_file,commi
     commit = f'git commit -m "{commit_message}"'
     subprocess.call(commit, shell=True,cwd=config_path)
     subprocess.call("git status", shell=True, cwd=config_path)
-    subprocess.call("git push", shell=True,cwd=config_path)
+    subprocess.call("git push origin HEAD", shell=True,cwd=config_path)
     subprocess.call("git status", shell=True, cwd=config_path)
 
 def gitpush_json(config_path,hash_path,name_list_path,commit_message):
