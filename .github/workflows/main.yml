@@ -40,6 +40,10 @@ jobs:
             git checkout $branch || git checkout -b $branch; \
             git pull origin $branch'
 
+      - name: Update submodule URL to SSH
+        run: |
+          git submodule foreach --recursive 'git remote set-url origin `git config --file .gitmodules submodule.$name.url`'
+
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -50,10 +54,6 @@ jobs:
         run: |
           pip install -r requirements.txt  # 如果需要依赖，可以在项目中包含 requirements.txt
         continue-on-error: true  # 如果没有 requirements.txt 文件，则跳过
-      
-      - name: Check submodule remote URL
-        run: |
-          git submodule foreach --recursive 'echo $name: `git remote get-url origin`'
 
       - name: Run Python script
         run: |
