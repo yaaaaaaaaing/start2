@@ -1,12 +1,10 @@
 name: Run expiration check
 
-# on:
-#   schedule:
-#     # 北京时间 8:30 PM（UTC 12:30）
-#     - cron: "30 12 * * *"
-#     workflow_dispatch:  # 添加手动触发支持
 on:
-  workflow_dispatch:  # 仅手动触发
+  schedule:
+    # 北京时间 8:30 PM（UTC 12:30）
+    - cron: "30 12 * * *"
+    workflow_dispatch:  # 添加手动触发支持
 
 permissions:
   contents: write 
