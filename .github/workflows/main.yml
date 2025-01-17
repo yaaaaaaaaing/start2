@@ -42,7 +42,8 @@ jobs:
 
       - name: Update submodule URL to SSH
         run: |
-          git submodule foreach --recursive 'git remote set-url origin `git config --file .gitmodules submodule.$name.url`'
+          git submodule foreach --recursive 'echo $name; echo $(git config --file $toplevel/.gitmodules submodule.$name.url)'
+          git submodule foreach --recursive 'git remote set-url origin $(git config --file $toplevel/.gitmodules submodule.$name.url)'
 
 
       - name: Set up Python
