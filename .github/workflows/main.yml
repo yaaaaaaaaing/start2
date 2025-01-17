@@ -32,6 +32,15 @@ jobs:
           git submodule foreach --recursive 'git config user.name "github-actions[bot]"'
           git submodule foreach --recursive 'git config user.email "github-actions[bot]@users.noreply.github.com"'
 
+
+      - name: Ensure submodules are on the correct branch
+        run: |
+          # 切换每个子模块到指定分支
+          git submodule foreach --recursive 'branch="develop"; \
+            git checkout $branch || git checkout -b $branch; \
+            git pull origin $branch'
+
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
