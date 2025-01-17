@@ -50,8 +50,8 @@ def push_database_to_github(change_file_list,name_list_path,hash_json_file,commi
     commit = f'git commit -m "{commit_message}"'
     subprocess.call(commit, shell=True,cwd=config_path)
     subprocess.call("git status", shell=True, cwd=config_path)
-    subprocess.call("git config --get remote.origin.url ", shell=True, cwd=config_path)
-    subprocess.call("git remote set-url --push origin git@github.com:yaaaaaaaaing/start2_database.git", shell=True, cwd=config_path)
+    subprocess.call("ssh -T git@github.com", shell=True, cwd=config_path)
+    subprocess.call("git submodule foreach --recursive 'git remote set-url origin git@github.com:yaaaaaaaaing/start2_database.git'", shell=True, cwd=config_path)
     subprocess.call("git push origin HEAD", shell=True,cwd=config_path)
     subprocess.call("git status", shell=True, cwd=config_path)
 
