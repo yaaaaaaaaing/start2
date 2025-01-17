@@ -17,6 +17,8 @@ jobs:
           ref: ${{ github.ref }}  # 指定要拉取的分支名
           submodules: recursive       # 初始化并更新子模块
           fetch-depth: 0  
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          persist-credentials: false
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
