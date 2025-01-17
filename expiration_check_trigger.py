@@ -40,6 +40,8 @@ def expiration_email_send(expiration_notification_dict,expiration_conformation_d
         send_email("账号已过期提醒", expiration_info["message"], client_email, attachments=[])
 
 if __name__ == "__main__":
+    database_branch = "develop"
+    pull_database_from_github(config_path,database_branch)
     expiration_notification_dict,expiration_conformation_dict = check_client_expiration(expiration_dict_path)
     expiration_email_send(expiration_notification_dict,expiration_conformation_dict)
     print("Expiration check finished.")
