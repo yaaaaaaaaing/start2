@@ -28,6 +28,10 @@ jobs:
           git config user.name "github-actions[bot]"  # 配置用户名
           git config user.email "github-actions[bot]@users.noreply.github.com"  # 配置邮箱
 
+           # 针对子模块的用户名和邮箱进行配置
+          git submodule foreach --recursive 'git config user.name "github-actions[bot]"'
+          git submodule foreach --recursive 'git config user.email "github-actions[bot]@users.noreply.github.com"'
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
