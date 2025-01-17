@@ -51,6 +51,7 @@ def push_database_to_github(change_file_list,name_list_path,hash_json_file,commi
     subprocess.call(commit, shell=True,cwd=config_path)
     subprocess.call("git status", shell=True, cwd=config_path)
     subprocess.call("git config --get remote.origin.url ", shell=True, cwd=config_path)
+    subprocess.call("git remote set-url --push origin git@github.com:yaaaaaaaaing/start2_database.git", shell=True, cwd=config_path)
     subprocess.call("git push origin HEAD", shell=True,cwd=config_path)
     subprocess.call("git status", shell=True, cwd=config_path)
 
