@@ -7,6 +7,7 @@ import re
 from init import *
 from gitpush_if import *
 import sys
+import requests
 
 
 def get_client_code_info(client_email,check_type,code_check_dict_path):
@@ -86,6 +87,14 @@ def parse_check_code(receive_text_list,server_tag):
     
     return first_match
 
+def post_code_message(output_message):
+    response = requests.post("http://localhost:1234/display_output", data={"message": output_message})
+    if response.status_code == 200:
+        print("信息已发送到网页。")
+    else:
+        print("信息发送失败。")
+    
+
 
 if __name__ == "__main__":
     try:
@@ -115,9 +124,9 @@ if __name__ == "__main__":
     server_tag = server_check_info["tag"]
     commit_message = f"check code for {client_email}"
     receive_text_list = receive_gmail_email(server_check_email,server_password)
-    first_match = parse_check_code(receive_text_list,server_tag)
+    output_message = parse_check_code(receive_text_list,server_tag)
 
 
     update_client_code_info(client_email,check_type,code_check_dict_path)
     # gitpush_json(config_path,hash_path,name_list_path,commit_message)
-    print(f"check code is {first_match}")
+    post_code_message(output_message)
