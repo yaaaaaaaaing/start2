@@ -1,4 +1,4 @@
-name: Run register Script
+name: Code Check Script
 
 on:
   workflow_dispatch:  # 仅手动触发
