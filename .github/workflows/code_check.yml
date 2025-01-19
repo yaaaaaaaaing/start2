@@ -62,7 +62,7 @@ jobs:
 
       - name: Run flask receive script
         run: |
-          python flask_receiver.py 
+          nohup python flask_receiver.py &> flask_output.log &
 
       - name: Run code check script
         run: |
