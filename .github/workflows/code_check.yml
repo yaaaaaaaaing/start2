@@ -2,6 +2,13 @@ name: Code Check Script
 
 on:
   workflow_dispatch:  # 仅手动触发
+  inputs:
+      client_email:
+        description: "Client email"
+        required: true
+      check_type:
+        description: "Check type"
+        required: true
 
 permissions:
   contents: write 
