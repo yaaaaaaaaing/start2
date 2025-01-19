@@ -1,80 +1,32 @@
-import requests
+import getopt
 import json
-import base64
 import imaplib
 import email
 from email.header import decode_header
 import re
-from init import mapping_dict
+from init import *
+from gitpush_if import *
+import sys
 
 
-def get_client_code_info(client_email,check_type,proxy_addr,proxy_port):
-    url = f"https://raw.githubusercontent.com/yaaaaaaaaing/start2_database/refs/heads/develop/code_check_info.json"
-
-    if proxy_addr is not "" and proxy_port is not "":
-        proxies = {
-        "http": f"http://{proxy_addr}:{proxy_port}",  # HTTP 代理
-        "https": f"http://{proxy_addr}:{proxy_port}",  # HTTPS 代理
-    }
-        response = requests.get(url,proxies=proxies)
-    else:
-        response = requests.get(url)
-    response.raise_for_status()  # 检查请求是否成功
-    json_data = response.json()  # 将响应内容解析为 JSON\
-    try:
-        server_check_info = json_data[client_email][check_type]
-        check_timer = server_check_info["check timer"]
-        if check_timer >= 2:
-            print("The check times has reached the maximum (each client email can check 2 times)")
-            exit(1)
-    except KeyError:
-        print("The registration email or check type does not exist")
-        return
+def get_client_code_info(client_email,check_type,code_check_dict_path):
+    with open(code_check_dict_path, 'r') as code_check_file:
+        code_check_dict = json.load(code_check_file)
+    server_check_info = code_check_dict[client_email][check_type]
+    check_timer = server_check_info["check timer"]
+    if check_timer >= 2:
+        print("The check times has reached the maximum (each client email can check 2 times)")
+        exit(1)
     return server_check_info
 
-def update_client_code_info(client_email,check_type,proxy_addr,proxy_port):
-    repo_owner = "yaaaaaaaaing" 
-    repo_name = "start2_database" 
-    file_path = "code_check_info.json" 
-    branch = "develop"
-    token = ""
-
-    file_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents/{file_path}"
-    headers = {"Authorization": f"token {token}"}
-    if proxy_addr is not "" and proxy_port is not "":
-        proxies = {
-        "http": f"http://{proxy_addr}:{proxy_port}",  # HTTP 代理
-        "https": f"http://{proxy_addr}:{proxy_port}",  # HTTPS 代理
-    }
-        response = requests.get(file_url, headers=headers,proxies=proxies)
-    else:
-        response = requests.get(file_url, headers=headers)
-    response.raise_for_status()
-    file_info = response.json()
-    sha = file_info["sha"] 
-    content = base64.b64decode(file_info["content"]).decode("utf-8")
-    json_data = json.loads(content)
+def update_client_code_info(client_email,check_type,code_check_dict_path):
+    with open(code_check_dict_path, 'r') as code_check_file:
+        json_data = json.load(code_check_file)  
+    json_data[client_email][check_type]["check timer"] += 1
     
-    try:
-        json_data[client_email][check_type]["check timer"] += 1
-        updated_content = base64.b64encode(json.dumps(json_data, indent=4).encode("utf-8")).decode("utf-8")
+    with open(code_check_dict_path, 'w') as code_check_file:
+        json.dump(json_data, code_check_file, indent=4)
 
-        update_data = {
-            "message": f"Update timer file triggered by ({client_email})",  
-            "content": updated_content, 
-            "sha": sha, 
-            "branch": branch, 
-        }
-    except KeyError:
-        print("The registration email or check type does not exist")
-        return
-
-    if proxy_addr is not "" and proxy_port is not "":
-        update_response = requests.put(file_url, headers=headers, json=update_data,proxies=proxies)
-        update_response.raise_for_status()
-    else:
-        update_response = requests.put(file_url, headers=headers, json=update_data)
-        update_response.raise_for_status()
     
 
 def receive_gmail_email(server_check_email,server_password):
@@ -136,22 +88,36 @@ def parse_check_code(receive_text_list,server_tag):
 
 
 if __name__ == "__main__":
-    selections_str = ""
-    for type in mapping_dict:
-        selections_str += type + " "
-    client_email = input("Please input the your registration email: ")
-    check_type = input(f"Please input the check type ({selections_str}): ")
-    proxy_addr = input(f"Please input proxy address:")
-    proxy_port = input(f"Please input proxy port:")
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "e:t:", ["email=", "type="])
+    except getopt.GetoptError as err:
+        print(f"Error: {err}")
+        exit(1)
     
-    server_check_info = get_client_code_info(client_email,check_type,proxy_addr,proxy_port)
+    client_email = ""
+    check_type = ""
+
+    # 解析参数
+    for opt, value in opts:
+        if opt in ("-e", "--email"):
+            client_email = value
+        elif opt in ("-t", "--type"):
+            check_type = value
+
+
+
+    database_branch = "develop"
+    pull_database_from_github(config_path,database_branch)
+    server_check_info = get_client_code_info(client_email,check_type,code_check_dict_path)
 
     server_check_email = server_check_info["server email"]
     server_password = server_check_info["server email pw"]
     server_tag = server_check_info["tag"]
+    commit_message = f"check code for {client_email}"
     receive_text_list = receive_gmail_email(server_check_email,server_password)
     first_match = parse_check_code(receive_text_list,server_tag)
 
 
-    update_client_code_info(client_email,check_type,proxy_addr,proxy_port)
+    update_client_code_info(client_email,check_type,code_check_dict_path)
+    # gitpush_json(config_path,hash_path,name_list_path,commit_message)
     print(f"check code is {first_match}")
