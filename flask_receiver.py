@@ -9,6 +9,7 @@ output_storage = {"message": "No output yet"}
 def display_output():
     # 接收 POST 请求中的输出信息
     output_storage["message"] = request.form.get('message', 'No message received')
+    print(output_storage["message"])
     return jsonify({"status": "success", "message": "Output received!"}), 200
 
 @app.route('/get_output', methods=['GET'])
