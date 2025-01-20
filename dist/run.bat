@@ -1,2 +1,0 @@
-code_trigger.exe
-pause
