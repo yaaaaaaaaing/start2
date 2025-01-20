@@ -66,4 +66,4 @@ jobs:
 
       - name: Run code check script
         run: |
-          python code_trigger.py  -e "${{ github.event.inputs.client_email }}" -t "${{ github.event.inputs.check_type }}"# 替换为你的 .py 文件路径
+          python code_trigger.py  -e "${{ github.event.inputs.client_email }}" -t "${{ github.event.inputs.check_type }}"
