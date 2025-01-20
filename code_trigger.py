@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
 
     update_client_code_info(client_email,check_type,code_check_dict_path)
-    # gitpush_json(config_path,hash_path,name_list_path,commit_message)
-    post_code_message(output_message)
+    gitpush_json(config_path,hash_path,name_list_path,commit_message)
+    # post_code_message(output_message)
     subject = "验证码信息"
     send_email(subject, output_message, client_email, [])
