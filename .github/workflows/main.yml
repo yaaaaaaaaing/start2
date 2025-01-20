@@ -38,7 +38,7 @@ jobs:
       - name: Ensure submodules are on the correct branch
         run: |
           # 切换每个子模块到指定分支
-          git submodule foreach --recursive 'branch="develop"; \
+          git submodule foreach --recursive 'branch="test"; \
             git checkout $branch || git checkout -b $branch; \
             git pull origin $branch'
 
