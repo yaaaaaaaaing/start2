@@ -41,7 +41,6 @@ if __name__ == '__main__':
     for client_email in register_check_dict:
         send_specific_info(client_email,client_conf_path)
 
-    commit_message = "update config for all client"
     gitpush_json(config_path,hash_path,name_list_path,commit_message)
 
     
