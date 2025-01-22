@@ -33,15 +33,18 @@ def check_client_expiration(expiration_dict_path):
 
     return expiration_notification_dict,expiration_conformation_dict
 
-def expiration_email_send(expiration_notification_dict,expiration_conformation_dict):
+def expiration_email_send(expiration_notification_dict,expiration_conformation_dict,server_email):
+    server_info = ""
     for client_email,expiration_info in expiration_notification_dict.items():
         send_email("账号即将过期提醒", expiration_info["message"], client_email, attachments=[])
     for client_email,expiration_info in expiration_conformation_dict.items():
         send_email("账号已过期提醒", expiration_info["message"], client_email, attachments=[])
+        server_info += f"{client_email}的{expiration_info['type_list']}已过期\n"
+    send_email("过期清理", server_info, server_email, attachments=[])
 
 if __name__ == "__main__":
     database_branch = "develop"
     pull_database_from_github(config_path,database_branch)
     expiration_notification_dict,expiration_conformation_dict = check_client_expiration(expiration_dict_path)
-    expiration_email_send(expiration_notification_dict,expiration_conformation_dict)
+    expiration_email_send(expiration_notification_dict,expiration_conformation_dict,server_email)
     print("Expiration check finished.")

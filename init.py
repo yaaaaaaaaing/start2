@@ -39,3 +39,5 @@ mapping_dict = {
         "tag": "Netflix"
     }
 }
+
+server_email = "niustaat@gmail.com"
