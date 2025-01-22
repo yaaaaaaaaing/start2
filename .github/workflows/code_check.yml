@@ -18,6 +18,20 @@ jobs:
     runs-on: ubuntu-latest  # 使用 GitHub 提供的 Ubuntu 虚拟机
 
     steps:
+      - name: Check last run time
+        id: check_last_run
+        run: |
+          cache_file=".github_action_last_run"
+          if [[ -f $cache_file ]]; then
+            last_run=$(cat $cache_file)
+            now=$(date +%s)
+            diff=$((now - last_run))
+            if [[ $diff -lt 120 ]]; then
+              echo "Error: Workflow triggered too soon after the last run."
+              exit 1
+            fi
+          fi
+          date +%s > $cache_file
       - name: Checkout code
         uses: actions/checkout@v3  # 拉取仓库代码
         with:
