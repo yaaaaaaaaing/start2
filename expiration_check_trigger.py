@@ -2,6 +2,8 @@
 import json
 import datetime
 from register_check_if import *
+import getopt
+import sys
 
 def name_list_expire_gen(name_list_path,expiration_conformation_dict):
     name_list_wb = openpyxl.load_workbook(name_list_path)
@@ -67,13 +69,28 @@ def expiration_email_send(expiration_notification_dict,expiration_conformation_d
         send_email("账号已过期提醒", expiration_info["message"], client_email, attachments=[])
 
 if __name__ == "__main__":
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "expire_type:", ["expire_type="])
+    except getopt.GetoptError as err:
+        print(f"Error: {err}")
+        exit(1)
+    
+    expire_type = ""
+
+    # 解析参数
+    for opt, value in opts:
+        if opt in ("-e", "--expire_type"):
+            expire_type = value
+
     database_branch = "develop"
     pull_database_from_github(config_path,database_branch)
     expiration_notification_dict,expiration_conformation_dict = check_client_expiration(expiration_dict_path)
-    expiration_email_send(expiration_notification_dict,expiration_conformation_dict,server_email)
+    # expiration_email_send(expiration_notification_dict,expiration_conformation_dict,server_email)
     print("Expiration check finished.")
 
-
-    coordinate_list = name_list_expire_gen(name_list_path,expiration_conformation_dict)
-    expire_client_expiration(expiration_conformation_dict,expiration_dict_path)
-    updata_name_list(name_list_path,client_conf_path,hash_path)
+    if expire_type == "management":
+        coordinate_list = name_list_expire_gen(name_list_path,expiration_conformation_dict)
+        expire_client_expiration(expiration_conformation_dict,expiration_dict_path)
+        updata_name_list(name_list_path,client_conf_path,hash_path)
+        commit_message = "expiration infos removed"
+        # gitpush_json(config_path,hash_path,name_list_path,commit_message)
