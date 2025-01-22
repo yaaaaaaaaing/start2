@@ -74,6 +74,11 @@ def add_account_to_codecheck_dict(client_email,client_conf_path,code_check_dict_
                 code_check_dict[client_email][type] = {"server email":client_conf_info[client_email][type_info["server email tag in name list"]],
                                                        "server email pw":client_conf_info[client_email][type_info["server email pw tag in name list"]],
                                                         "check timer": 0,"tag":type_info["tag"]}
+            elif code_check_dict[client_email]["server email"] != client_conf_info[client_email][type_info]["server email tag in name list"]:
+                code_check_dict[client_email][type] = {"server email":client_conf_info[client_email][type_info["server email tag in name list"]],
+                                                       "server email pw":client_conf_info[client_email][type_info["server email pw tag in name list"]],
+                                                        "check timer": 0,"tag":type_info["tag"]} 
+                                                                                                 
     with open(code_check_dict_path, 'w') as file:
         json.dump(code_check_dict, file, indent=4)
 
