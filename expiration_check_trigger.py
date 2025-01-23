@@ -13,14 +13,22 @@ def name_list_expire_gen(name_list_path,expiration_conformation_dict):
     for client,expire_info in expiration_conformation_dict.items():
         for type in expire_info["type_list"]:
             expire_column = mapping_dict[type]["client in name list"]
-            for row in range(max_row):
+            for row in range(1,max_row):
                 if name_list_ws.cell(row=row,column=expire_column).value == client:
                     name_list_ws.cell(row=row,column=expire_column).value = None
                     if mapping_dict[type]["pin in name list"] is not None:
                         pin_column = mapping_dict[type]["pin in name list"]
                         name_list_ws.cell(row=row,column=pin_column).value = None
                         coordinate_list.append({"row":row,"column":pin_column})
+    name_list_wb.save(name_list_path)
     return coordinate_list
+
+def expiration_management_email_send(coordinate_list,server_email):
+    body = "需要处理的过期PIN包括：\n"
+    for coordinate in coordinate_list:
+        body += str(coordinate) + "\n"
+    send_email("过期账号待操作", body, server_email, attachments=[])
+
 
 def expire_client_expiration(expiration_conformation_dict,expiration_dict_path):
     with open(expiration_dict_path, 'r') as file:
@@ -85,8 +93,9 @@ if __name__ == "__main__":
     database_branch = "develop"
     pull_database_from_github(config_path,database_branch)
     expiration_notification_dict,expiration_conformation_dict = check_client_expiration(expiration_dict_path)
-    # expiration_email_send(expiration_notification_dict,expiration_conformation_dict,server_email)
-    print("Expiration check finished.")
+    if expire_type == "dailycheck":
+        # expiration_email_send(expiration_notification_dict,expiration_conformation_dict,server_email)
+        print("Expiration check finished.")
 
     if expire_type == "management":
         coordinate_list = name_list_expire_gen(name_list_path,expiration_conformation_dict)
@@ -94,3 +103,4 @@ if __name__ == "__main__":
         updata_name_list(name_list_path,client_conf_path,hash_path)
         commit_message = "expiration infos removed"
         # gitpush_json(config_path,hash_path,name_list_path,commit_message)
+        expiration_management_email_send(coordinate_list,server_email)

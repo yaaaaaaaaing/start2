@@ -1,9 +1,7 @@
-name: Run expiration check
+name: Run expiration management(Run when you ready to manage the PIN)
 
 on:
-  schedule:
-    # 北京时间 8:30 PM（UTC 12:30）
-    - cron: "30 12 * * *"
+  workflow_dispatch:  # 仅手动触发
 
 permissions:
   contents: write 
@@ -57,4 +55,4 @@ jobs:
 
       - name: Run Python script
         run: |
-          python expiration_check_trigger.py -e dailycheck
+          python expiration_check_trigger.py -e management
