@@ -7,6 +7,12 @@ import crcmod
 from send_receive_email import send_email
 from init import *
 import random
+import datetime
+
+def datetime_to_str(dt):
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
+def str_to_datetime(s):
+    return datetime.datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
 
 def name_list_check(name_list_path):
 
@@ -91,6 +97,11 @@ def name_list_parse(name_list_path,max_row_list):
             email_info_dict["serv_email_pw"] = name_list_ws.cell(row=row,column=column_serv_email_pw).value
             email_info_dict["serv_nf_pw"] = name_list_ws.cell(row=row,column=column_serv_nf_pw).value
             email_info_dict["serv_vpn_url"] = name_list_ws.cell(row=row,column=column_serv_vpn_pw).value
+            try:
+                email_info_dict["serv_nf_expire"] = datetime_to_str(name_list_ws.cell(row=row,column=column_serv_nf_expiration).value)
+                email_info_dict["serv_vpn_expire"] = datetime_to_str(name_list_ws.cell(row=row,column=column_serv_vpn_expiration).value)
+            except:
+                pass
             email_info_dict["client_vpn_email"] = []
             email_info_dict["client_pin_email"] = []
             email_info_dict["client_nf_email"] = []
@@ -122,10 +133,12 @@ def name_list_parse(name_list_path,max_row_list):
                 client_info_dict[client_vpn_email]["serv_vpn_email_pw"] = email_info_dict["serv_email_pw"]
                 client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_vpn_email]["serv_vpn_url"] = email_info_dict["serv_vpn_url"]
+                client_info_dict[client_vpn_email]["serv_vpn_expire"] = email_info_dict["serv_vpn_expire"]
             else:
                 client_info_dict[client_vpn_email]["serv_vpn_email_pw"] = email_info_dict["serv_email_pw"]
                 client_info_dict[client_vpn_email]["serv_vpn_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_vpn_email]["serv_vpn_url"] = email_info_dict["serv_vpn_url"]
+                client_info_dict[client_vpn_email]["serv_vpn_expire"] = email_info_dict["serv_vpn_expire"]
         for client_nf_email in email_info_dict["client_nf_email"]:
             if client_nf_email not in client_info_dict:
                 client_info_dict[client_nf_email] = {}
@@ -133,11 +146,13 @@ def name_list_parse(name_list_path,max_row_list):
                 client_info_dict[client_nf_email]["serv_nf_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
                 client_info_dict[client_nf_email]["serv_nf_pin"] = email_info_dict["client_pin_email"][email_info_dict["client_nf_email"].index(client_nf_email)]
+                client_info_dict[client_nf_email]["serv_nf_expire"] = email_info_dict["serv_nf_expire"]
             else:
                 client_info_dict[client_nf_email]["serv_nf_email_pw"] = email_info_dict["serv_email_pw"]
                 client_info_dict[client_nf_email]["serv_nf_email"] = email_info_dict["serv_email"]
                 client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
                 client_info_dict[client_nf_email]["serv_nf_pin"] = email_info_dict["client_pin_email"][email_info_dict["client_nf_email"].index(client_nf_email)]
+                client_info_dict[client_nf_email]["serv_nf_expire"] = email_info_dict["serv_nf_expire"]
 
     return client_info_dict
 
