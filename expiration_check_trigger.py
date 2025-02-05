@@ -76,8 +76,8 @@ def check_server_expiration(client_conf_path):
         client_config_dict = json.load(file)
     for client_info in client_config_dict.values():
         for type,type_info in mapping_dict.items():
-            if type_info["server email tag in name list"] in client_info and datetime.datetime.now() - str_to_datetime(client_info[type_info["server expiration data in name list"]]) <= datetime.timedelta(days=3):
-                check_server_results += f"你的账号{type}类型账号{type_info['server email tag in name list']}即将于{client_info[type_info['server expiration data in name list']]}过期，请及时续费！\n"
+            if type_info["server email tag in name list"] in client_info and str_to_datetime(client_info[type_info["server expiration data in name list"]]) - datetime.datetime.now() <= datetime.timedelta(days=3):
+                check_server_results += f"你的账号{type}类型账号{client_info[type_info['server email tag in name list']]}即将于{client_info[type_info['server expiration data in name list']]}过期，请及时续费！\n"
                 
     return check_server_results
             
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     expiration_notification_dict,expiration_conformation_dict = check_client_expiration(expiration_dict_path)
     check_server_results = check_server_expiration(client_conf_path)
     if expire_type == "dailycheck":
-        # expiration_email_send(expiration_notification_dict,expiration_conformation_dict,check_server_results,server_email)
+        expiration_email_send(expiration_notification_dict,expiration_conformation_dict,check_server_results,server_email)
         print("Expiration check finished.")
 
     if expire_type == "management":
