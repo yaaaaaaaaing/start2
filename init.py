@@ -25,17 +25,23 @@ mapping_dict = {
     "vpn_account": {
         "client in name list": column_client_vpn_email,
         "expiration data in name list": column_serv_vpn_expiration,
+        "pin in name list": None,
         "attachment": "./attachment/netflix使用说明.pdf",
         "server email tag in name list": "serv_vpn_email",
         "server email pw tag in name list": "serv_vpn_email_pw",
+        "server expiration data in name list": "serv_vpn_expire",
         "tag": "vpn"
     },
     "nf_account": {
         "client in name list": column_client_nf_email,
         "expiration data in name list": column_serv_nf_expiration,
+        "pin in name list": column_client_nf_pin,
         "attachment": "./attachment/代理操作说明.pdf",
         "server email tag in name list": "serv_nf_email",
         "server email pw tag in name list": "serv_nf_email_pw",
+        "server expiration data in name list": "serv_nf_expire",
         "tag": "Netflix"
     }
 }
+
+server_email = "niustaat@gmail.com"
