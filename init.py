@@ -29,6 +29,7 @@ mapping_dict = {
         "attachment": "./attachment/netflix使用说明.pdf",
         "server email tag in name list": "serv_vpn_email",
         "server email pw tag in name list": "serv_vpn_email_pw",
+        "server expiration data in name list": "serv_vpn_expire",
         "tag": "vpn"
     },
     "nf_account": {
@@ -38,6 +39,7 @@ mapping_dict = {
         "attachment": "./attachment/代理操作说明.pdf",
         "server email tag in name list": "serv_nf_email",
         "server email pw tag in name list": "serv_nf_email_pw",
+        "server expiration data in name list": "serv_nf_expire",
         "tag": "Netflix"
     }
 }

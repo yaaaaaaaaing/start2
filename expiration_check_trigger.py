@@ -70,11 +70,25 @@ def check_client_expiration(expiration_dict_path):
 
     return expiration_notification_dict,expiration_conformation_dict
 
-def expiration_email_send(expiration_notification_dict,expiration_conformation_dict,server_email):
+def check_server_expiration(client_conf_path):
+    check_server_results= "attention: \n"
+    with open(client_conf_path, 'r') as file:
+        client_config_dict = json.load(file)
+    for client_info in client_config_dict.values():
+        for type,type_info in mapping_dict.items():
+            if type_info["server email tag in name list"] in client_info and datetime.datetime.now() - str_to_datetime(client_info[type_info["server expiration data in name list"]]) <= datetime.timedelta(days=3):
+                check_server_results += f"你的账号{type}类型账号{type_info['server email tag in name list']}即将于{client_info[type_info['server expiration data in name list']]}过期，请及时续费！\n"
+                
+    return check_server_results
+            
+
+def expiration_email_send(expiration_notification_dict,expiration_conformation_dict,check_server_results,server_email):
     for client_email,expiration_info in expiration_notification_dict.items():
         send_email("账号即将过期提醒", expiration_info["message"], client_email, attachments=[])
     for client_email,expiration_info in expiration_conformation_dict.items():
         send_email("账号已过期提醒", expiration_info["message"], client_email, attachments=[])
+    if check_server_results != "attention: \n":
+        send_email("服务器账号即将过期提醒", check_server_results, server_email, attachments=[])
 
 if __name__ == "__main__":
     try:
@@ -93,8 +107,9 @@ if __name__ == "__main__":
     database_branch = "develop"
     pull_database_from_github(config_path,database_branch)
     expiration_notification_dict,expiration_conformation_dict = check_client_expiration(expiration_dict_path)
+    check_server_results = check_server_expiration(client_conf_path)
     if expire_type == "dailycheck":
-        # expiration_email_send(expiration_notification_dict,expiration_conformation_dict,server_email)
+        # expiration_email_send(expiration_notification_dict,expiration_conformation_dict,check_server_results,server_email)
         print("Expiration check finished.")
 
     if expire_type == "management":
