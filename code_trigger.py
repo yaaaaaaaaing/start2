@@ -11,15 +11,15 @@ import requests
 from send_receive_email import *
 
 
-def get_client_code_info(client_email,check_type,code_check_dict_path):
+def get_client_code_info(client_email,check_type,code_check_dict_path,output_message):
+    output_msg = output_message
     with open(code_check_dict_path, 'r') as code_check_file:
         code_check_dict = json.load(code_check_file)
     server_check_info = code_check_dict[client_email][check_type]
     check_timer = server_check_info["check timer"]
     if check_timer >= 2:
-        print("The check times has reached the maximum (each client email can check 2 times)")
-        exit(1)
-    return server_check_info
+        output_msg += "当前限制验证码登陆次数为2次\n"
+    return server_check_info,output_msg
 
 def update_client_code_info(client_email,check_type,code_check_dict_path):
     with open(code_check_dict_path, 'r') as code_check_file:
@@ -31,7 +31,8 @@ def update_client_code_info(client_email,check_type,code_check_dict_path):
 
     
 
-def receive_gmail_email(server_check_email,server_password):
+def receive_gmail_email(server_check_email,server_password,output_message):
+    output_msg = output_message
     imap_server = "imap.gmail.com"
     email_user = server_check_email
     email_password = server_password
@@ -66,12 +67,14 @@ def receive_gmail_email(server_check_email,server_password):
                             body = msg.get_payload(decode=True).decode(encoding if encoding else "utf-8")
                     receive_text_list.append({"subject":subject,"body":body})                          
     else:
-        print("未能获取邮件列表。")
+        output_msg += "邮箱状态异常，请联系管理员\n"
     mail.logout()
 
-    return receive_text_list
+    return receive_text_list,output_msg
 
-def parse_check_code(receive_text_list,server_tag):
+def parse_check_code(receive_text_list,server_tag,output_message):
+    output_msg = output_message
+    first_match = ""
     pattern = r"^\d{4}$"
     flag_code_found = False
     for receive_text_info in receive_text_list:
@@ -83,10 +86,9 @@ def parse_check_code(receive_text_list,server_tag):
                     flag_code_found = True
                     break
     if flag_code_found == False:
-        print("No check code found, please trigger the check code email again")
-        exit(1)
+        output_msg += "未能获得验证码,请检查是否成功请求验证码后重试\n"
     
-    return first_match
+    return first_match,output_msg
 
 def post_code_message(output_message):
     response = requests.post("http://localhost:1234/display_output", data={"message": output_message})
@@ -104,8 +106,8 @@ if __name__ == "__main__":
         print(f"Error: {err}")
         exit(1)
     
-    client_email = ""
-    check_type = ""
+    client_email = "liyang.tjtj@gmail.com"
+    check_type = "nf_account"
 
     # 解析参数
     for opt, value in opts:
@@ -117,19 +119,23 @@ if __name__ == "__main__":
 
 
     database_branch = "develop"
+    output_message = ""
     pull_database_from_github(config_path,database_branch)
-    server_check_info = get_client_code_info(client_email,check_type,code_check_dict_path)
-
+    server_check_info,output_message = get_client_code_info(client_email,check_type,code_check_dict_path,output_message)
+    
     server_check_email = server_check_info["server email"]
     server_password = server_check_info["server email pw"]
     server_tag = server_check_info["tag"]
     commit_message = f"check code for {client_email}"
-    receive_text_list = receive_gmail_email(server_check_email,server_password)
-    output_message = parse_check_code(receive_text_list,server_tag)
+    receive_text_list,output_message = receive_gmail_email(server_check_email,server_password,output_message)
+    first_match,output_message = parse_check_code(receive_text_list,server_tag,output_message)
 
-
-    update_client_code_info(client_email,check_type,code_check_dict_path)
-    gitpush_json(config_path,hash_path,name_list_path,commit_message)
     # post_code_message(output_message)
-    subject = "验证码信息"
-    send_email(subject, output_message, client_email, [])
+    if first_match != "" and output_message == "":
+        update_client_code_info(client_email,check_type,code_check_dict_path)
+        gitpush_json(config_path,hash_path,name_list_path,commit_message)
+        subject = "验证码信息"
+        send_email(subject, first_match, client_email, [])
+    else:
+        subject = "验证码信息"
+        send_email(subject, output_message, client_email, [])
