@@ -67,7 +67,7 @@ def receive_gmail_email(server_check_email,server_password,output_message):
                             body = msg.get_payload(decode=True).decode(encoding if encoding else "utf-8")
                     receive_text_list.append({"subject":subject,"body":body})                          
     else:
-        output_msg += "未能获得包含验证码的邮件\n"
+        output_msg += "邮箱状态异常，请联系管理员\n"
     mail.logout()
 
     return receive_text_list,output_msg
@@ -86,7 +86,7 @@ def parse_check_code(receive_text_list,server_tag,output_message):
                     flag_code_found = True
                     break
     if flag_code_found == False:
-        output_msg += "未能获得验证码\n"
+        output_msg += "未能获得验证码,请检查是否成功请求验证码后重试\n"
     
     return first_match,output_msg
 
@@ -106,8 +106,8 @@ if __name__ == "__main__":
         print(f"Error: {err}")
         exit(1)
     
-    client_email = ""
-    check_type = ""
+    client_email = "liyang.tjtj@gmail.com"
+    check_type = "nf_account"
 
     # 解析参数
     for opt, value in opts:
