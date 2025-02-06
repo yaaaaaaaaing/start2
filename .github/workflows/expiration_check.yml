@@ -57,4 +57,4 @@ jobs:
 
       - name: Run Python script
         run: |
-          python expiration_check_trigger.py -e dailycheck
+          python expiration_check_trigger.py --expire_type dailycheck
