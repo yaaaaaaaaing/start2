@@ -2,6 +2,16 @@ name: Run register Script
 
 on:
   workflow_dispatch:  # 仅手动触发
+    inputs:
+        client_email:
+          description: "Client email"
+          required: true
+        account_type:
+          description: "Account type"
+          required: true
+        register_days:
+          description: "Register days"
+          required: true
 
 permissions:
   contents: write 
@@ -55,4 +65,4 @@ jobs:
 
       - name: Run Python script
         run: |
-          python register_check_trig.py  # 替换为你的 .py 文件路径
+          python register_check_trig.py  -c "${{ github.event.inputs.client_email }}" -t "${{ github.event.inputs.account_type }}" -d "${{ github.event.inputs.register_days }}"

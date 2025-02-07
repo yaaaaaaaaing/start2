@@ -153,7 +153,8 @@ def name_list_parse(name_list_path,max_row_list):
                 client_info_dict[client_nf_email]["serv_nf_pw"] = email_info_dict["serv_nf_pw"]
                 client_info_dict[client_nf_email]["serv_nf_pin"] = email_info_dict["client_pin_email"][email_info_dict["client_nf_email"].index(client_nf_email)]
                 client_info_dict[client_nf_email]["serv_nf_expire"] = email_info_dict["serv_nf_expire"]
-
+    
+    client_info_dict = dict(sorted(client_info_dict.items(), key=lambda x: x[0])) 
     return client_info_dict
 
 def client_info_compare(client_info_dict,client_conf_path):
