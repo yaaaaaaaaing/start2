@@ -34,7 +34,7 @@ if __name__ == '__main__':
             elif opt in ("-t", "--type"):
                 account_type = value
             elif opt in ("-d", "--days"):
-                register_days = value
+                register_days = int(value)
     except:
         client_email = ""
         account_type = ""
