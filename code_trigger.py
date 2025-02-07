@@ -106,8 +106,8 @@ if __name__ == "__main__":
         print(f"Error: {err}")
         exit(1)
     
-    client_email = "liyang.tjtj@gmail.com"
-    check_type = "nf_account"
+    client_email = ""
+    check_type = ""
 
     # 解析参数
     for opt, value in opts:

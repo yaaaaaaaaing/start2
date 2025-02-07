@@ -2,6 +2,8 @@
 from register_check_if import *
 from send_receive_email import *
 from init import *
+import getopt
+import sys
 
 def receive_text_parse(receive_text_list,token_register):
     register_check_dict = {}
@@ -23,12 +25,26 @@ def receive_text_parse(receive_text_list,token_register):
     return register_check_dict
                     
 if __name__ == '__main__':
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "c:t:d:", ["client=", "type=", "days="])
+        # 解析参数
+        for opt, value in opts:
+            if opt in ("-c", "--client"):
+                client_email = value
+            elif opt in ("-t", "--type"):
+                account_type = value
+            elif opt in ("-d", "--days"):
+                register_days = value
+    except:
+        client_email = ""
+        account_type = ""
+        register_days = 0
+
     database_branch = "develop"
     pull_database_from_github(config_path,database_branch)
 
-    token_register = "tianjin-000"
-    receive_text_list = receive_email()
-    register_check_dict = receive_text_parse(receive_text_list,token_register)
+    register_check_dict = {}
+    register_check_dict[client_email] = [{"type":account_type,"days":register_days}]
 
     add_account_to_name_list(register_check_dict,name_list_path)
     update_client_expiration(register_check_dict,expiration_dict_path)
