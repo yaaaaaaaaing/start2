@@ -10,8 +10,11 @@ import subprocess
 def pull_database_from_github(config_path,database_branch):
     if any(os.scandir(config_path)) is False:
         subprocess.call(f"git submodule update --init --recursive", shell=True)
-        subprocess.call(f"git checkout {database_branch}", shell=True,cwd=config_path)
-        print("git checkout submodules mannually")
+        result = subprocess.run(["git", "config", "--file", ".gitmodules", "--get-regexp", "path"],
+                                capture_output=True, text=True)
+        submodule_paths = [line.split(" ")[1] for line in result.stdout.strip().split("\n") if line]
+        for submodule_path in submodule_paths:
+            subprocess.call(f"git checkout {database_branch}", shell=True,cwd=submodule_path)
 
 def hash_check(config_path,file_type,hash_json_file): # 检查json文件是否发生变化
     with open(hash_json_file, 'r') as hash_file:
@@ -37,9 +40,7 @@ def hash_check(config_path,file_type,hash_json_file): # 检查json文件是否�
 
     return change_file_list
 
-def push_database_to_github(change_file_list,name_list_path,hash_json_file,commit_message,config_path):
-    change_file_list.append(hash_json_file)
-    change_file_list.append(name_list_path)
+def push_database_to_github(change_file_list,commit_message,config_path):
     for file in change_file_list:
         try:
             #将相对config_path的路径添加到submodule中
@@ -54,4 +55,6 @@ def push_database_to_github(change_file_list,name_list_path,hash_json_file,commi
 def gitpush_json(config_path,hash_path,name_list_path,commit_message):
     change_file_list = hash_check(config_path,"json",hash_path)
     if len(change_file_list) > 0:
-        push_database_to_github(change_file_list,name_list_path,hash_path,commit_message,config_path)
+        change_file_list.append(hash_path)
+        change_file_list.append(name_list_path)
+        push_database_to_github(change_file_list,commit_message,config_path)
