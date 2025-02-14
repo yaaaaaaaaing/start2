@@ -2,3 +2,6 @@
 	path = configuration
 	url = git@github.com:yaaaaaaaaing/start2_database.git
 	branch = develop
+[submodule "secrets"]
+	path = secrets
+	url = git@github.com:yaaaaaaaaing/start2_secrets.git
