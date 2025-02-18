@@ -9,6 +9,28 @@ import os
 import imaplib
 import email
 from email.header import decode_header
+import requests
+
+
+def send_message_to_external_user(access_token, user_id, message):
+    url = f"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}"
+
+    # 消息内容
+    data = {
+        "touser": user_id,  # 外部联系人的UserID
+        "msgtype": "text",
+        "agentid": 1000002,  # 企业应用的 agentid
+        "text": {
+            "content": message  # 要发送的文本消息
+        }
+    }
+    
+    response = requests.post(url, json=data)
+    data = response.json()
+    if data.get("errcode") == 0:
+        print("Message sent successfully!")
+    else:
+        print(f"Error: {data.get('errmsg')}")
 
 def send_email(subject, body, to_email, attachments=[]):
     password = "nbfikmyoudedrrju"
@@ -42,10 +64,11 @@ def send_email(subject, body, to_email, attachments=[]):
 
     server.quit()
 
-def receive_email():
+def receive_gmail_email(server_check_email,server_password,output_message):
+    output_msg = output_message
     imap_server = "imap.gmail.com"
-    email_user = "niustaat@gmail.com" 
-    email_password = "nbfikmyoudedrrju"
+    email_user = server_check_email
+    email_password = server_password
 
     mail = imaplib.IMAP4_SSL(imap_server)
     mail.login(email_user, email_password)
@@ -70,19 +93,17 @@ def receive_email():
                             content_type = part.get_content_type()
                             content_disposition = str(part.get("Content-Disposition"))
                             if content_type == "text/plain" and "attachment" not in content_disposition:
-                                body = part.get_payload(decode=True).decode()
-                                receive_text_list.append(body)
-
+                                body = part.get_payload(decode=True).decode(encoding if encoding else "utf-8")  
                     else:
                         content_type = msg.get_content_type()
                         if content_type == "text/plain":
-                            body = msg.get_payload(decode=True).decode()
-                            receive_text_list.append(body)
+                            body = msg.get_payload(decode=True).decode(encoding if encoding else "utf-8")
+                    receive_text_list.append({"subject":subject,"body":body})                          
     else:
-        print("未能获取邮件列表。")
+        output_msg += "邮箱状态异常，请联系管理员\n"
     mail.logout()
 
-    return receive_text_list
+    return receive_text_list,output_msg
 
 
 # 使用示例

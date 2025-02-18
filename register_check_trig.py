@@ -40,8 +40,8 @@ if __name__ == '__main__':
         account_type = ""
         register_days = 0
 
-    database_branch = "develop"
-    pull_database_from_github(config_path,database_branch)
+    # database_branch = "develop"
+    # pull_database_from_github(config_path,database_branch)
 
     register_check_dict = {}
     register_check_dict[client_email] = [{"type":account_type,"days":register_days}]
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     for client_email in register_check_dict:
         send_specific_info(client_email,client_conf_path)
 
-    gitpush_json(config_path,hash_path,name_list_path,commit_message)
+    # gitpush_json(config_path,hash_path,name_list_path,commit_message)
 
     
 

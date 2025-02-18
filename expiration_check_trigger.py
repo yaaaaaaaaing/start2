@@ -104,8 +104,8 @@ if __name__ == "__main__":
         if opt in ("-e", "--expire_type"):
             expire_type = value
 
-    database_branch = "develop"
-    pull_database_from_github(config_path,database_branch)
+    # database_branch = "develop"
+    # pull_database_from_github(config_path,database_branch)
     expiration_notification_dict,expiration_conformation_dict = check_client_expiration(expiration_dict_path)
     check_server_results = check_server_expiration(client_conf_path)
     if expire_type == "dailycheck":
@@ -116,6 +116,6 @@ if __name__ == "__main__":
         coordinate_list = name_list_expire_gen(name_list_path,expiration_conformation_dict)
         expire_client_expiration(expiration_conformation_dict,expiration_dict_path)
         updata_name_list(name_list_path,client_conf_path,hash_path)
-        commit_message = "expiration infos removed"
-        gitpush_json(config_path,hash_path,name_list_path,commit_message)
+        # commit_message = "expiration infos removed"
+        # gitpush_json(config_path,hash_path,name_list_path,commit_message)
         expiration_management_email_send(coordinate_list,server_email)

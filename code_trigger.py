@@ -29,49 +29,6 @@ def update_client_code_info(client_email,check_type,code_check_dict_path):
     with open(code_check_dict_path, 'w') as code_check_file:
         json.dump(json_data, code_check_file, indent=4)
 
-    
-
-def receive_gmail_email(server_check_email,server_password,output_message):
-    output_msg = output_message
-    imap_server = "imap.gmail.com"
-    email_user = server_check_email
-    email_password = server_password
-
-    mail = imaplib.IMAP4_SSL(imap_server)
-    mail.login(email_user, email_password)
-    mail.select("inbox")
-    status, messages = mail.search(None, 'UNSEEN')  # 'UNSEEN' 表示未读邮件
-
-    receive_text_list = []
-    if status == "OK":
-        mail_ids = messages[0].split()
-
-        for mail_id in mail_ids:
-            res, msg = mail.fetch(mail_id, "(RFC822)")
-            for response in msg:
-                if isinstance(response, tuple):
-                    msg = email.message_from_bytes(response[1])
-                    subject, encoding = decode_header(msg["Subject"])[0]
-                    if isinstance(subject, bytes):
-                        subject = subject.decode(encoding if encoding else "utf-8")
-
-                    if msg.is_multipart():
-                        for part in msg.walk():
-                            content_type = part.get_content_type()
-                            content_disposition = str(part.get("Content-Disposition"))
-                            if content_type == "text/plain" and "attachment" not in content_disposition:
-                                body = part.get_payload(decode=True).decode(encoding if encoding else "utf-8")  
-                    else:
-                        content_type = msg.get_content_type()
-                        if content_type == "text/plain":
-                            body = msg.get_payload(decode=True).decode(encoding if encoding else "utf-8")
-                    receive_text_list.append({"subject":subject,"body":body})                          
-    else:
-        output_msg += "邮箱状态异常，请联系管理员\n"
-    mail.logout()
-
-    return receive_text_list,output_msg
-
 def parse_check_code(receive_text_list,server_tag,output_message):
     output_msg = output_message
     first_match = ""
@@ -118,9 +75,9 @@ if __name__ == "__main__":
 
 
 
-    database_branch = "develop"
+    # database_branch = "develop"
     output_message = ""
-    pull_database_from_github(config_path,database_branch)
+    # pull_database_from_github(config_path,database_branch)
     server_check_info,output_message = get_client_code_info(client_email,check_type,code_check_dict_path,output_message)
     
     server_check_email = server_check_info["server email"]
@@ -133,7 +90,7 @@ if __name__ == "__main__":
     # post_code_message(output_message)
     if first_match != "" and output_message == "":
         update_client_code_info(client_email,check_type,code_check_dict_path)
-        gitpush_json(config_path,hash_path,name_list_path,commit_message)
+        # gitpush_json(config_path,hash_path,name_list_path,commit_message)
         subject = "验证码信息"
         send_email(subject, first_match, client_email, [])
     else:
