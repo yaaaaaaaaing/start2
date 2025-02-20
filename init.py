@@ -5,9 +5,10 @@ name_list_path = "./configuration/name_list.xlsx"
 client_conf_path = "./configuration/client_info.json"
 expiration_dict_path = "./configuration/expiration_info.json"
 code_check_dict_path = "./configuration/code_check_info.json"
+wechat_extid_path = "./configuration/ext_id_info.json"
 
 secret_path = "./secrets"
-wechat_token_path = "./secrets/access_token.txt"
+wechat_token_path = "./secrets/access_token.json"
 
 num_max_slots = 5
 column_serv_email = 1
@@ -50,4 +51,5 @@ mapping_dict = {
 server_email = "niustaat@gmail.com"
 
 wechat_corp_id = 'ww9307f1c337b989f9'
-wechat_corp_secret = 'MRquHJlM9YnZDfJBtWn_Q41iTF3-NSapveLiQYX5R1g'
+wechat_func_secret = 'MRquHJlM9YnZDfJBtWn_Q41iTF3-NSapveLiQYX5R1g'
+wechat_list_secret = "76KCQWaO9sl8uWU1VBsZusil8JEzsvLm6pTIYxeIpKg"
