@@ -32,6 +32,12 @@ def send_message_to_external_user(access_token, user_id, message):
     else:
         print(f"Error: {data.get('errmsg')}")
 
+def error_report_wechat(error_report_str,access_token_func):
+    user_id = "LiYang"
+    access_token = access_token_func
+    message = error_report_str
+    send_message_to_external_user(access_token, user_id, message)
+
 def send_email(subject, body, to_email, attachments=[]):
     password = "nbfikmyoudedrrju"
     from_email = "niustaat@gmail.com"
