@@ -75,9 +75,9 @@ if __name__ == "__main__":
 
 
 
-    # database_branch = "develop"
+    database_branch = "ubuntu"
     output_message = ""
-    # pull_database_from_github(config_path,database_branch)
+    pull_database_from_github(config_path,database_branch)
     server_check_info,output_message = get_client_code_info(client_email,check_type,code_check_dict_path,output_message)
     
     server_check_email = server_check_info["server email"]
@@ -90,9 +90,11 @@ if __name__ == "__main__":
     # post_code_message(output_message)
     if first_match != "" and output_message == "":
         update_client_code_info(client_email,check_type,code_check_dict_path)
-        # gitpush_json(config_path,hash_path,name_list_path,commit_message)
+        gitpush_json(config_path,hash_path,name_list_path,commit_message)
         subject = "验证码信息"
         send_email(subject, first_match, client_email, [])
+        send_message_to_external_user(client_email, first_match,wechat_extid_path,wechat_token_path)
     else:
         subject = "验证码信息"
         send_email(subject, output_message, client_email, [])
+        send_message_to_external_user(client_email, output_message,wechat_extid_path,wechat_token_path)

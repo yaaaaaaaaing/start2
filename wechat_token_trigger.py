@@ -2,6 +2,8 @@ import requests
 from init import *
 from gitpush_if import *
 from send_receive_email import *
+import getopt
+import sys
 
 def get_access_token(corp_id,wechat_list_secret,wechat_func_secret):
     url = f'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corp_id}&corpsecret={wechat_list_secret}'
@@ -54,7 +56,7 @@ def update_external_userid(wechat_extid_path,wechat_token_path,client_conf_path)
                 elif update_client_email is not "":
                     ext_mark = update_data_ext_info["follow_user"][0]["remark"]
                     error_report_str = f"Error: {ext_mark} is not in client info"
-                    error_report_wechat(error_report_str,access_token_func)
+                    error_report_wechat(error_report_str,wechat_extid_path,wechat_token_path)
     
     emails_to_remove = []
     for ext_id in ext_id_list:
@@ -74,7 +76,26 @@ def update_external_userid(wechat_extid_path,wechat_token_path,client_conf_path)
     print("update external_userid successfully")
 
 if __name__ == '__main__':
-    access_token_list,access_token_func = get_access_token(wechat_corp_id,wechat_list_secret,wechat_func_secret)
-    updata_access_token(access_token_list,access_token_func,wechat_token_path,secret_path)
-    update_external_userid(wechat_extid_path,wechat_token_path,client_conf_path)
-
+    wechat_type = ""
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "wechat_type:", ["wechat_type="])
+        for opt, value in opts:
+            if opt in ("-t", "--wechat_type"):
+                wechat_type = value
+    except getopt.GetoptError as err:
+        err_message = "wechat_token_trigger is run without parameter"
+        error_report_wechat(err_message,wechat_extid_path,wechat_token_path)
+        exit(1)
+    
+    database_branch = "ubuntu"
+    pull_database_from_github(config_path,database_branch)
+    if wechat_type == "hourly":
+        access_token_list,access_token_func = get_access_token(wechat_corp_id,wechat_list_secret,wechat_func_secret)
+        updata_access_token(access_token_list,access_token_func,wechat_token_path,secret_path)
+    elif wechat_type == "daily":
+        update_external_userid(wechat_extid_path,wechat_token_path,client_conf_path)
+        commit_message = "update external_userid daily"
+        gitpush_json(config_path,hash_path,name_list_path,commit_message)
+    else:
+        err_message = "wechat_token_trigger is run with incorrect parameter"
+        error_report_wechat(err_message,wechat_extid_path,wechat_token_path)

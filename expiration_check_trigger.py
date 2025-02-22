@@ -2,6 +2,7 @@
 import json
 import datetime
 from register_check_if import *
+from send_receive_email import *
 import getopt
 import sys
 
@@ -50,22 +51,22 @@ def check_client_expiration(expiration_dict_path):
             if datetime.datetime.now() > str_to_datetime(expiration_date) - datetime.timedelta(days=3) and datetime.datetime.now() < str_to_datetime(expiration_date):
                 if client_email not in expiration_notification_dict:
                     expiration_notification_dict[client_email] = {}
-                    expiration_notification_dict[client_email]["message"] = "一支穿云箭：\n"
+                    expiration_notification_dict[client_email]["message"] = "一支穿云箭：\n抱歉打扰一下\n,"
                     expiration_notification_dict[client_email]["type_list"] = []
-                    expiration_notification_dict[client_email]["message"] += f"你的{type}即将于{expiration_date}过期，请及时续费！\n"
+                    expiration_notification_dict[client_email]["message"] += f"你的{type}即将于{expiration_date}过期，如果需要请及时续费！\n"
                     expiration_notification_dict[client_email]["type_list"].append(type)
                 else:
-                    expiration_notification_dict[client_email]["message"] += f"你的{type}即将于{expiration_date}过期，请及时续费！\n"
+                    expiration_notification_dict[client_email]["message"] += f"你的{type}即将于{expiration_date}过期，如果需要请及时续费！\n"
                     expiration_notification_dict[client_email]["type_list"].append(type)
             elif datetime.datetime.now() > str_to_datetime(expiration_date):
                 if client_email not in expiration_conformation_dict:
                     expiration_conformation_dict[client_email] = {}
-                    expiration_conformation_dict[client_email]["message"] = "一支穿云箭：\n"
+                    expiration_conformation_dict[client_email]["message"] = "一支穿云箭：\n抱歉打扰一下\n,"
                     expiration_conformation_dict[client_email]["type_list"] = []
-                    expiration_conformation_dict[client_email]["message"] += f"你的{type}已于{expiration_date}过期，请及时续费！\n"
+                    expiration_conformation_dict[client_email]["message"] += f"你的{type}已于{expiration_date}过期，如果需要请及时续费！\n"
                     expiration_conformation_dict[client_email]["type_list"].append(type)
                 else:
-                    expiration_conformation_dict[client_email]["message"] += f"你的{type}已于{expiration_date}过期，请及时续费！\n"
+                    expiration_conformation_dict[client_email]["message"] += f"你的{type}已于{expiration_date}过期，如果需要请及时续费！\n"
                     expiration_conformation_dict[client_email]["type_list"].append(type)
 
     return expiration_notification_dict,expiration_conformation_dict
@@ -85,10 +86,13 @@ def check_server_expiration(client_conf_path):
 def expiration_email_send(expiration_notification_dict,expiration_conformation_dict,check_server_results,server_email):
     for client_email,expiration_info in expiration_notification_dict.items():
         send_email("账号即将过期提醒", expiration_info["message"], client_email, attachments=[])
+        send_message_to_external_user(client_email, expiration_info["message"],wechat_extid_path,wechat_token_path)
     for client_email,expiration_info in expiration_conformation_dict.items():
         send_email("账号已过期提醒", expiration_info["message"], client_email, attachments=[])
+        send_message_to_external_user(client_email, expiration_info["message"],wechat_extid_path,wechat_token_path)
     if check_server_results != "attention: \n":
         send_email("服务器账号即将过期提醒", check_server_results, server_email, attachments=[])
+        error_report_wechat(check_server_results,wechat_extid_path,wechat_token_path)
 
 if __name__ == "__main__":
     try:
@@ -104,8 +108,8 @@ if __name__ == "__main__":
         if opt in ("-e", "--expire_type"):
             expire_type = value
 
-    # database_branch = "develop"
-    # pull_database_from_github(config_path,database_branch)
+    database_branch = "ubuntu"
+    pull_database_from_github(config_path,database_branch)
     expiration_notification_dict,expiration_conformation_dict = check_client_expiration(expiration_dict_path)
     check_server_results = check_server_expiration(client_conf_path)
     if expire_type == "dailycheck":
@@ -116,6 +120,6 @@ if __name__ == "__main__":
         coordinate_list = name_list_expire_gen(name_list_path,expiration_conformation_dict)
         expire_client_expiration(expiration_conformation_dict,expiration_dict_path)
         updata_name_list(name_list_path,client_conf_path,hash_path)
-        # commit_message = "expiration infos removed"
-        # gitpush_json(config_path,hash_path,name_list_path,commit_message)
+        commit_message = "expiration infos removed"
+        gitpush_json(config_path,hash_path,name_list_path,commit_message)
         expiration_management_email_send(coordinate_list,server_email)

@@ -1,7 +1,8 @@
 [submodule "configuration"]
 	path = configuration
 	url = git@github.com:yaaaaaaaaing/start2_database.git
-	branch = develop
+	branch = ubuntu
 [submodule "secrets"]
 	path = secrets
 	url = git@github.com:yaaaaaaaaing/start2_secrets.git
+	branch = ubuntu

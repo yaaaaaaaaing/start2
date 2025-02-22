@@ -10,12 +10,27 @@ import imaplib
 import email
 from email.header import decode_header
 import requests
+import json
 
 
-def send_message_to_external_user(access_token, user_id, message):
-    url = f"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}"
+def send_message_to_external_user(client_email, message,wechat_extid_path,wechat_token_path):
+    with open(wechat_token_path, 'r') as f:
+        access_token_dict = json.load(f)
+        access_token_func = access_token_dict["access_token_func"]
+        f.close()
+    with open(wechat_extid_path, 'r') as f:
+        wechat_extid_dict = json.load(f)
+        f.close()
+    if client_email == "SERVER":
+        user_id = "LiYang"
+    elif client_email in wechat_extid_dict["extid_email_map"]:
+        user_id = wechat_extid_dict["extid_email_map"][client_email]
+    else:
+        err_message = f"warning: No external user ID found for email {client_email}"
+        error_report_wechat(err_message,wechat_extid_path,wechat_token_path)
+        return
 
-    # 消息内容
+    url = f"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token_func}"
     data = {
         "touser": user_id,  # 外部联系人的UserID
         "msgtype": "text",
@@ -32,11 +47,10 @@ def send_message_to_external_user(access_token, user_id, message):
     else:
         print(f"Error: {data.get('errmsg')}")
 
-def error_report_wechat(error_report_str,access_token_func):
-    user_id = "LiYang"
-    access_token = access_token_func
+def error_report_wechat(error_report_str,wechat_extid_path,wechat_token_path):
+    email = "SERVER"
     message = error_report_str
-    send_message_to_external_user(access_token, user_id, message)
+    send_message_to_external_user(email, message,wechat_extid_path,wechat_token_path)
 
 def send_email(subject, body, to_email, attachments=[]):
     password = "nbfikmyoudedrrju"

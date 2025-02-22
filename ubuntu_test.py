@@ -2,6 +2,7 @@ import getopt
 import sys
 import json
 from send_receive_email import *
+from init import *
 
 if __name__ == "__main__":
     try:
@@ -25,6 +26,7 @@ if __name__ == "__main__":
     with open("./tmp/ubuntu_test.txt", "w+") as f:
         f.write(output)
 
-    #send_message_to_external_user(access_token, user_id, message)
+    error_report_str = "test finish"
+    error_report_wechat(error_report_str,wechat_extid_path,wechat_token_path)
 
     print(1)
