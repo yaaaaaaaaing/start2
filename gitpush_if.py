@@ -50,7 +50,7 @@ def push_database_to_github(change_file_list,commit_message,config_path):
 
     commit = f'git commit -m "{commit_message}"'
     subprocess.call(commit, shell=True,cwd=config_path)
-    subprocess.call("git push origin HEAD", shell=True,cwd=config_path)
+    subprocess.call("GIT_SSH_COMMAND='ssh -i /home/ubuntu/.ssh/id_ed25519' git push origin HEAD", shell=True,cwd=config_path)
 
 def gitpush_json(config_path,hash_path,name_list_path,commit_message):
     change_file_list = hash_check(config_path,"json",hash_path)
