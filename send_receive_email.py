@@ -21,18 +21,39 @@ def send_message_to_external_user(client_email, message,wechat_extid_path,wechat
     with open(wechat_extid_path, 'r') as f:
         wechat_extid_dict = json.load(f)
         f.close()
-    if client_email == "SERVER":
-        user_id = "LiYang"
-    elif client_email in wechat_extid_dict["extid_email_map"]:
+    if client_email in wechat_extid_dict["extid_email_map"]:
         user_id = wechat_extid_dict["extid_email_map"][client_email]
     else:
         err_message = f"warning: No external user ID found for email {client_email}"
         error_report_wechat(err_message,wechat_extid_path,wechat_token_path)
         return
 
+    url = f"https://qyapi.weixin.qq.com/cgi-bin/externalcontact/add_msg_template?access_token={access_token_func}"
+
+    json_data = {
+        "chat_type": "single",  # "single" 代表私聊, "group" 代表群聊
+        "external_userid": user_id,  # 目标客户的userid
+        "sender": "LiYang",  # 发送消息的员工
+        "text": {"content": message},
+        "msgtype": "text"
+    }
+    
+    response = requests.post(url, json=json_data)
+    data = response.json()
+    if data.get("errcode") == 0:
+        print("Message sent successfully!")
+    else:
+        print(f"Error: {data.get('errmsg')}")
+
+def error_report_wechat(error_report_str,wechat_extid_path,wechat_token_path):
+    with open(wechat_token_path, 'r') as f:
+        access_token_dict = json.load(f)
+        access_token_func = access_token_dict["access_token_func"]
+        f.close()
+    message = error_report_str
     url = f"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token_func}"
     data = {
-        "touser": user_id,  # 外部联系人的UserID
+        "touser": "LiYang",  # 外部联系人的UserID
         "msgtype": "text",
         "agentid": 1000002,  # 企业应用的 agentid
         "text": {
@@ -47,10 +68,6 @@ def send_message_to_external_user(client_email, message,wechat_extid_path,wechat
     else:
         print(f"Error: {data.get('errmsg')}")
 
-def error_report_wechat(error_report_str,wechat_extid_path,wechat_token_path):
-    email = "SERVER"
-    message = error_report_str
-    send_message_to_external_user(email, message,wechat_extid_path,wechat_token_path)
 
 def send_email(subject, body, to_email, attachments=[]):
     password = "nbfikmyoudedrrju"
