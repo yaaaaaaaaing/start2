@@ -3,8 +3,8 @@ name: Run expiration check
 on:
   schedule:
     # 北京时间 8:30 PM（UTC 12:30）
-    - cron: "30 12 * * *"
-
+    # - cron: "30 12 * * *"
+    workflow_dispatch:
 permissions:
   contents: write 
 
