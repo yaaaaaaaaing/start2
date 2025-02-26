@@ -18,7 +18,7 @@ def get_client_code_info(client_email,check_type,code_check_dict_path,output_mes
     server_check_info = code_check_dict[client_email][check_type]
     check_timer = server_check_info["check timer"]
     if check_timer >= 2:
-        output_msg += "当前限制验证码登陆次数为2次\n"
+        output_msg += "received sign-in code for more than 2 times, please contact admin\n"
     return server_check_info,output_msg
 
 def update_client_code_info(client_email,check_type,code_check_dict_path):
@@ -43,7 +43,7 @@ def parse_check_code(receive_text_list,server_tag,output_message):
                     flag_code_found = True
                     break
     if flag_code_found == False:
-        output_msg += "未能获得验证码,请检查是否成功请求验证码后重试\n"
+        output_msg += "not receive sign-in code, please check if successfully triggered\n"
     
     return first_match,output_msg
 
@@ -90,11 +90,11 @@ if __name__ == "__main__":
     # post_code_message(output_message)
     if first_match != "" and output_message == "":
         update_client_code_info(client_email,check_type,code_check_dict_path)
-        gitpush_json(config_path,hash_path,name_list_path,commit_message)
+        # gitpush_json(config_path,hash_path,name_list_path,commit_message)
         subject = "验证码信息"
         send_email(subject, first_match, client_email, [])
-        send_message_to_external_user(client_email, first_match,wechat_extid_path,wechat_token_path)
+        print("code is:" + first_match)
     else:
         subject = "验证码信息"
         send_email(subject, output_message, client_email, [])
-        send_message_to_external_user(client_email, output_message,wechat_extid_path,wechat_token_path)
+        print("warning:" + output_message)

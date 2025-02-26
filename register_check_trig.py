@@ -57,7 +57,7 @@ if __name__ == '__main__':
     for client_email in register_check_dict:
         send_specific_info(client_email,client_conf_path)
 
-    gitpush_json(config_path,hash_path,name_list_path,commit_message)
+    # gitpush_json(config_path,hash_path,name_list_path,commit_message)
 
     
 

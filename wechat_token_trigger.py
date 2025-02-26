@@ -96,6 +96,7 @@ if __name__ == '__main__':
         update_external_userid(wechat_extid_path,wechat_token_path,client_conf_path)
         commit_message = "update external_userid daily"
         gitpush_json(config_path,hash_path,name_list_path,commit_message)
+        # only update once per day
     else:
         err_message = "wechat_token_trigger is run with incorrect parameter"
         error_report_wechat(err_message,wechat_extid_path,wechat_token_path)

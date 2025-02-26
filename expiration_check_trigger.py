@@ -121,5 +121,5 @@ if __name__ == "__main__":
         expire_client_expiration(expiration_conformation_dict,expiration_dict_path)
         updata_name_list(name_list_path,client_conf_path,hash_path)
         commit_message = "expiration infos removed"
-        gitpush_json(config_path,hash_path,name_list_path,commit_message)
+        # gitpush_json(config_path,hash_path,name_list_path,commit_message)
         expiration_management_email_send(coordinate_list,server_email)
