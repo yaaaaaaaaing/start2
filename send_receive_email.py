@@ -103,8 +103,12 @@ def send_email(subject, body, to_email, attachments=[]):
 
 def receive_gmail_email(server_check_email,server_password,output_message):
     output_msg = output_message
-    imap_server = "imap.gmail.com"
-    email_user = server_check_email
+    if "cloud-arrow" in server_check_email:
+        imap_server = "mail.cloud-arrow.xyz"
+        email_user = server_check_email.split("@")[0]
+    else:
+        imap_server = "imap.gmail.com"
+        email_user = server_check_email
     email_password = server_password
 
     mail = imaplib.IMAP4_SSL(imap_server)
