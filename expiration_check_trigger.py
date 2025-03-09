@@ -48,26 +48,26 @@ def check_client_expiration(expiration_dict_path):
         expiration_dict = json.load(file)
     for client_email,expiration_info in expiration_dict.items():
         for type,expiration_date in expiration_info["expiration_list"].items():
-            if datetime.datetime.now() > str_to_datetime(expiration_date) - datetime.timedelta(days=3) and datetime.datetime.now() < str_to_datetime(expiration_date):
+            if datetime.datetime.now() > str_to_datetime(expiration_date) - datetime.timedelta(days=1) and datetime.datetime.now() < str_to_datetime(expiration_date):
                 if client_email not in expiration_notification_dict:
                     expiration_notification_dict[client_email] = {}
-                    expiration_notification_dict[client_email]["message"] = "一支穿云箭：\n抱歉打扰一下\n,"
+                    expiration_notification_dict[client_email]["message"] = "一支穿云箭：\n你好\n,"
                     expiration_notification_dict[client_email]["type_list"] = []
                     expiration_notification_dict[client_email]["message"] += f"你的{type}即将于{expiration_date}过期，如果需要请及时续费！\n"
-                    expiration_notification_dict[client_email]["type_list"].append(type)
+                    expiration_notification_dict[client_email]["type_list"].append(type) + "\n"
                 else:
                     expiration_notification_dict[client_email]["message"] += f"你的{type}即将于{expiration_date}过期，如果需要请及时续费！\n"
-                    expiration_notification_dict[client_email]["type_list"].append(type)
-            elif datetime.datetime.now() > str_to_datetime(expiration_date):
+                    expiration_notification_dict[client_email]["type_list"].append(type) + "\n"
+            elif datetime.datetime.now() > str_to_datetime(expiration_date) and datetime.datetime.now() < str_to_datetime(expiration_date) + datetime.timedelta(days=1):
                 if client_email not in expiration_conformation_dict:
                     expiration_conformation_dict[client_email] = {}
-                    expiration_conformation_dict[client_email]["message"] = "一支穿云箭：\n抱歉打扰一下\n,"
+                    expiration_conformation_dict[client_email]["message"] = "一支穿云箭：\n你好\n,"
                     expiration_conformation_dict[client_email]["type_list"] = []
                     expiration_conformation_dict[client_email]["message"] += f"你的{type}已于{expiration_date}过期，如果需要请及时续费！\n"
-                    expiration_conformation_dict[client_email]["type_list"].append(type)
+                    expiration_conformation_dict[client_email]["type_list"].append(type) + "\n"
                 else:
                     expiration_conformation_dict[client_email]["message"] += f"你的{type}已于{expiration_date}过期，如果需要请及时续费！\n"
-                    expiration_conformation_dict[client_email]["type_list"].append(type)
+                    expiration_conformation_dict[client_email]["type_list"].append(type) + "\n"
 
     return expiration_notification_dict,expiration_conformation_dict
 
@@ -89,7 +89,7 @@ def expiration_email_send(expiration_notification_dict,expiration_conformation_d
         send_message_to_external_user(client_email, expiration_info["message"],wechat_extid_path,wechat_token_path)
     for client_email,expiration_info in expiration_conformation_dict.items():
         send_email("账号已过期提醒", expiration_info["message"], client_email, attachments=[])
-        send_message_to_external_user(client_email, expiration_info["message"],wechat_extid_path,wechat_token_path)
+        # send_message_to_external_user(client_email, expiration_info["message"],wechat_extid_path,wechat_token_path)
     if check_server_results != "attention: \n":
         send_email("服务器账号即将过期提醒", check_server_results, server_email, attachments=[])
         error_report_wechat(check_server_results,wechat_extid_path,wechat_token_path)
