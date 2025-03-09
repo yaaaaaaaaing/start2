@@ -14,11 +14,17 @@ DAYS=$(echo "$INPUT_DATA" | sed -n 's/.*days=\([^&]*\).*/\1/p')
 TOKEN=$(echo "$INPUT_DATA" | sed -n 's/.*token=\([^&]*\).*/\1/p')
 
 TARGET_TOKEN="tianjin-000"
+TARGET_RESET="tianjin-reset"
 
 # 校验 token
-if [ "$TOKEN" != "$TARGET_TOKEN" ]; then
+if [ "$TOKEN" == "$TARGET_TOKEN" ]; then
+    python3 /var/www/start2/register_check_trig.py -c "$CLIENT_EMAIL" -t "$CHECK_TYPE" -d "$DAYS"
+    echo "successfully register"
+elif [ "$TOKEN" == "$TARGET_RESET" ]; then
+    python3 /var/www/start2/code_reset_trigger.py -e "$CLIENT_EMAIL" -t "$CHECK_TYPE"
+    echo "successfully reset"
+else 
     echo "Error: Invalid token"
     exit 1
 fi
-    python3 /var/www/start2/register_check_trig.py -c "$CLIENT_EMAIL" -t "$CHECK_TYPE" -d "$DAYS"
-    echo "successfully test"
+    
