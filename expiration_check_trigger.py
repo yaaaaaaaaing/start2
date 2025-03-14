@@ -54,20 +54,20 @@ def check_client_expiration(expiration_dict_path):
                     expiration_notification_dict[client_email]["message"] = "一支穿云箭：\n你好\n,"
                     expiration_notification_dict[client_email]["type_list"] = []
                     expiration_notification_dict[client_email]["message"] += f"你的{type}即将于{expiration_date}过期，如果需要请及时续费！\n"
-                    expiration_notification_dict[client_email]["type_list"].append(type) + "\n"
+                    expiration_notification_dict[client_email]["type_list"].append(type)
                 else:
                     expiration_notification_dict[client_email]["message"] += f"你的{type}即将于{expiration_date}过期，如果需要请及时续费！\n"
-                    expiration_notification_dict[client_email]["type_list"].append(type) + "\n"
+                    expiration_notification_dict[client_email]["type_list"].append(type)
             elif datetime.datetime.now() > str_to_datetime(expiration_date) and datetime.datetime.now() < str_to_datetime(expiration_date) + datetime.timedelta(days=1):
                 if client_email not in expiration_conformation_dict:
                     expiration_conformation_dict[client_email] = {}
                     expiration_conformation_dict[client_email]["message"] = "一支穿云箭：\n你好\n,"
                     expiration_conformation_dict[client_email]["type_list"] = []
                     expiration_conformation_dict[client_email]["message"] += f"你的{type}已于{expiration_date}过期，如果需要请及时续费！\n"
-                    expiration_conformation_dict[client_email]["type_list"].append(type) + "\n"
+                    expiration_conformation_dict[client_email]["type_list"].append(type)
                 else:
                     expiration_conformation_dict[client_email]["message"] += f"你的{type}已于{expiration_date}过期，如果需要请及时续费！\n"
-                    expiration_conformation_dict[client_email]["type_list"].append(type) + "\n"
+                    expiration_conformation_dict[client_email]["type_list"].append(type)
 
     return expiration_notification_dict,expiration_conformation_dict
 
@@ -101,7 +101,7 @@ if __name__ == "__main__":
         print(f"Error: {err}")
         exit(1)
     
-    expire_type = ""
+    expire_type = "dailycheck"
 
     # 解析参数
     for opt, value in opts:
